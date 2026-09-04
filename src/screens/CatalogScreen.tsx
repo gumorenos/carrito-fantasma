@@ -29,7 +29,7 @@ export function CatalogScreen({ mode, store, onBack, onOpenProduct }: CatalogScr
   return (
     <section className="space-y-6 py-4 sm:py-10">
       <div className="flex items-center justify-between gap-3">
-        <button className="text-sm font-bold text-ghost-teal hover:text-ghost-tealDark" onClick={onBack} type="button">
+        <button className="inline-flex min-h-11 items-center text-sm font-bold text-ghost-teal hover:text-ghost-tealDark" onClick={onBack} type="button">
           ← Cambiar tienda
         </button>
         <SimulationBadge />

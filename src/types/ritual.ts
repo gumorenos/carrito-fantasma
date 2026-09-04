@@ -1,4 +1,4 @@
-import type { AppMode, CartItem, StoreId } from './product'
+import type { AppMode, CartItem, StoreId, UrgeRating } from './product'
 
 export type RitualSnapshot = {
   items: CartItem[]
@@ -6,4 +6,5 @@ export type RitualSnapshot = {
   mode: AppMode
   storeId: StoreId
   storeName: string
+  initialUrgeRating?: UrgeRating
 }

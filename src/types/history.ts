@@ -11,6 +11,7 @@ export type GhostCartHistoryEntry = {
   items: CartItem[]
   subtotalAvoidedInCents: number
   categories: ProductCategory[]
+  initialUrgeRating?: UrgeRating
   urgeRating?: UrgeRating
   stillWantsToBuy?: StillWantsToBuy
   createdAt: string

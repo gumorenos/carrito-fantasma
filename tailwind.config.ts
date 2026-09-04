@@ -13,7 +13,7 @@ export default {
           mintStrong: '#b7e5d2',
           teal: '#16796d',
           tealDark: '#0f5b54',
-          coral: '#e97857',
+          coral: '#bd482f',
           coralSoft: '#fff0e8',
           sand: '#fff7df',
           line: '#dbe9e4',

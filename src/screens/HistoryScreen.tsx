@@ -45,7 +45,7 @@ export function HistoryScreen({
 
   return (
     <section className="mx-auto max-w-2xl space-y-6 py-4 sm:py-10">
-      <button className="text-sm font-bold text-ghost-teal hover:text-ghost-tealDark" onClick={onBack} type="button">
+      <button className="inline-flex min-h-11 items-center text-sm font-bold text-ghost-teal hover:text-ghost-tealDark" onClick={onBack} type="button">
         ← Volver al inicio
       </button>
       {entries.length === 0 ? (
@@ -114,7 +114,7 @@ export function HistoryScreen({
           <div className="space-y-3">
             <div className="flex items-end justify-between gap-4">
               <h2 className="text-2xl font-black tracking-tight text-ghost-ink">Últimos carritos</h2>
-              <button className="min-h-10 px-2 text-xs font-bold text-ghost-coral hover:underline" onClick={clearHistory} type="button">Borrar historial</button>
+              <button className="min-h-11 px-2 text-xs font-bold text-ghost-coral hover:underline" onClick={clearHistory} type="button">Borrar historial</button>
             </div>
             {entries.map((entry) => {
               const itemCount = entry.items.reduce((total, item) => total + item.quantity, 0)
@@ -129,9 +129,15 @@ export function HistoryScreen({
                     </div>
                     <p className="shrink-0 text-lg font-black text-ghost-ink">{formatPen(entry.subtotalAvoidedInCents)}</p>
                   </div>
-                  {(entry.urgeRating || entry.stillWantsToBuy) && (
+                  {(entry.initialUrgeRating || entry.urgeRating || entry.stillWantsToBuy) && (
                     <p className="mt-3 border-t border-ghost-line pt-3 text-xs font-semibold text-ghost-muted">
-                      {entry.urgeRating ? `Bajó el impulso: ${entry.urgeRating}/5` : 'Sin rating'}
+                      {entry.initialUrgeRating && entry.urgeRating
+                        ? `Impulso: ${entry.initialUrgeRating}/5 → ${entry.urgeRating}/5`
+                        : entry.urgeRating
+                          ? `Impulso al terminar: ${entry.urgeRating}/5`
+                          : entry.initialUrgeRating
+                            ? `Impulso al comenzar: ${entry.initialUrgeRating}/5`
+                            : 'Sin rating'}
                       {entry.stillWantsToBuy ? ` · Todavía quería: ${entry.stillWantsToBuy === 'yes' ? 'sí' : entry.stillWantsToBuy === 'no' ? 'no' : 'tal vez'}` : ''}
                     </p>
                   )}

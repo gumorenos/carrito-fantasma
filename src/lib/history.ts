@@ -62,6 +62,9 @@ function sanitizeEntry(value: unknown): GhostCartHistoryEntry | null {
     typeof category === 'string' && validCategories.has(category as ProductCategory),
   )
   const urgeRating = value.urgeRating === undefined || isUrgeRating(value.urgeRating) ? value.urgeRating : undefined
+  const initialUrgeRating = value.initialUrgeRating === undefined || isUrgeRating(value.initialUrgeRating)
+    ? value.initialUrgeRating
+    : undefined
   const stillWantsToBuy = value.stillWantsToBuy === undefined || validStillWants.has(value.stillWantsToBuy as StillWantsToBuy)
     ? value.stillWantsToBuy as StillWantsToBuy | undefined
     : undefined
@@ -75,6 +78,7 @@ function sanitizeEntry(value: unknown): GhostCartHistoryEntry | null {
     items,
     subtotalAvoidedInCents: value.subtotalAvoidedInCents,
     categories: [...new Set(categories)],
+    initialUrgeRating,
     urgeRating,
     stillWantsToBuy,
     createdAt: value.createdAt,
@@ -164,11 +168,10 @@ export function getMostUsedMode(history: readonly GhostCartHistoryEntry[] = getH
 
   const counts = new Map<AppMode, number>()
   for (const entry of history) counts.set(entry.mode, (counts.get(entry.mode) ?? 0) + 1)
-
-  return history.reduce<AppMode | null>((mostUsed, entry) => {
-    if (!mostUsed) return entry.mode
-    return (counts.get(entry.mode) ?? 0) > (counts.get(mostUsed) ?? 0) ? entry.mode : mostUsed
-  }, null)
+  const shoppingCount = counts.get('shopping') ?? 0
+  const foodCount = counts.get('food') ?? 0
+  if (shoppingCount === foodCount) return null
+  return shoppingCount > foodCount ? 'shopping' : 'food'
 }
 
 export function getSimpleRecommendations(

@@ -60,9 +60,12 @@ export function sanitizeCart(value: unknown): CartItem[] {
   if (!Array.isArray(value)) return []
 
   const sanitized: CartItem[] = []
+  let activeStoreId: StoreId | null = null
 
   for (const candidate of value) {
     if (!isCartItem(candidate)) continue
+    if (activeStoreId && candidate.storeId !== activeStoreId) continue
+    activeStoreId ??= candidate.storeId as StoreId
 
     const existing = sanitized.find((item) => item.productId === candidate.productId)
 
@@ -107,6 +110,7 @@ function getTotalItemCount(items: readonly CartItem[]): number {
 
 export function addItem(items: readonly CartItem[], product: Product): CartItem[] {
   if (!Number.isSafeInteger(product.priceInCents) || product.priceInCents <= 0) return [...items]
+  if (items.some((item) => item.storeId !== product.storeId)) return [...items]
 
   const existingIndex = items.findIndex((item) => item.productId === product.id)
   const next = items.map((item) => ({ ...item }))

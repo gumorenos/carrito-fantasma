@@ -13,7 +13,7 @@ export function CheckoutScreen({ snapshot, onBack, onConfirm }: CheckoutScreenPr
   return (
     <section className="mx-auto max-w-2xl space-y-6 py-4 sm:py-10">
       <div className="flex items-center justify-between gap-3">
-        <button className="text-sm font-bold text-ghost-teal hover:text-ghost-tealDark" onClick={onBack} type="button">
+        <button className="inline-flex min-h-11 items-center text-sm font-bold text-ghost-teal hover:text-ghost-tealDark" onClick={onBack} type="button">
           ← Volver al carrito
         </button>
         <SimulationBadge />
@@ -72,7 +72,7 @@ export function CheckoutScreen({ snapshot, onBack, onConfirm }: CheckoutScreenPr
       <Button className="w-full" onClick={onConfirm}>
         Confirmar compra fantasma
       </Button>
-      <p className="text-center text-xs font-semibold leading-5 text-ghost-muted">Nada será cobrado, enviado ni guardado fuera de este dispositivo.</p>
+      <p className="text-center text-xs font-semibold leading-5 text-ghost-muted">No se crea ningún pedido ni se guarda información personal fuera de este dispositivo.</p>
     </section>
   )
 }

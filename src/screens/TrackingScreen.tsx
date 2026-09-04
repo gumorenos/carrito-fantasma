@@ -10,6 +10,7 @@ const trackingSteps = [
 ]
 
 type TrackingScreenProps = {
+  controlsLocked: boolean
   snapshot: RitualSnapshot
   step: number
   onBack: () => void
@@ -17,14 +18,14 @@ type TrackingScreenProps = {
   onSkip: () => void
 }
 
-export function TrackingScreen({ snapshot, step, onBack, onAdvance, onSkip }: TrackingScreenProps) {
+export function TrackingScreen({ controlsLocked, snapshot, step, onBack, onAdvance, onSkip }: TrackingScreenProps) {
   const currentStep = trackingSteps[Math.min(Math.max(step, 0), trackingSteps.length - 1)]
   const isLastStep = step >= trackingSteps.length - 1
 
   return (
     <section className="mx-auto flex min-h-[70vh] max-w-xl flex-col justify-center py-6 sm:py-10">
       <div className="flex items-center justify-between gap-3">
-        <button className="text-sm font-bold text-ghost-teal hover:text-ghost-tealDark" onClick={onBack} type="button">
+        <button className="inline-flex min-h-11 items-center text-sm font-bold text-ghost-teal hover:text-ghost-tealDark" onClick={onBack} type="button">
           ← Volver al checkout
         </button>
         <SimulationBadge />
@@ -45,11 +46,11 @@ export function TrackingScreen({ snapshot, step, onBack, onAdvance, onSkip }: Tr
           ))}
         </div>
 
-        <Button className="mt-8 w-full" onClick={onAdvance}>
+        <Button className="mt-8 w-full" disabled={controlsLocked} onClick={onAdvance}>
           {isLastStep ? 'Ver cuánto no gastaste' : 'Continuar'}
         </Button>
         {!isLastStep && (
-          <button className="mt-3 min-h-10 px-3 text-sm font-bold text-ghost-teal hover:underline" onClick={onSkip} type="button">
+          <button className="mt-3 min-h-11 px-3 text-sm font-bold text-ghost-teal hover:underline disabled:cursor-wait disabled:opacity-60" disabled={controlsLocked} onClick={onSkip} type="button">
             Saltar al resultado
           </button>
         )}

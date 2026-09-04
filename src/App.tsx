@@ -38,18 +38,23 @@ export default function App() {
   const [cartNotice, setCartNotice] = useState<string | null>(null)
   const [ritualSnapshot, setRitualSnapshot] = useState<RitualSnapshot | null>(null)
   const [trackingStep, setTrackingStep] = useState(0)
+  const [trackingControlsLocked, setTrackingControlsLocked] = useState(false)
+  const [initialUrgeRating, setInitialUrgeRating] = useState<UrgeRating | null>(null)
   const [resultUrgeRating, setResultUrgeRating] = useState<UrgeRating | null>(null)
   const [stillWantsToBuy, setStillWantsToBuy] = useState<StillWantsToBuy | null>(null)
   const [resultSaved, setResultSaved] = useState(false)
   const [resultNotice, setResultNotice] = useState<string | null>(null)
   const resultSaveLock = useRef(false)
   const analyticsSessionId = useRef(createAnalyticsSessionId())
+  const flowStarted = useRef(false)
   const appOpenedTracked = useRef(false)
   const checkoutCompletedTracked = useRef(false)
   const trackingStartedTracked = useRef(false)
   const savingRevealedTracked = useRef(false)
+  const initialUrgeRatingTracked = useRef(false)
   const urgeRatingTracked = useRef(false)
   const trackingStartedAt = useRef<number | null>(null)
+  const trackingUnlockTimeout = useRef<number | null>(null)
   const cart = useCart()
   const history = useHistory()
 
@@ -62,6 +67,14 @@ export default function App() {
       session_id: analyticsSessionId.current,
     })
   }, [history.entries.length])
+
+  useEffect(() => () => {
+    if (trackingUnlockTimeout.current !== null) window.clearTimeout(trackingUnlockTimeout.current)
+  }, [])
+
+  useEffect(() => {
+    document.getElementById('main-content')?.focus()
+  }, [screen])
 
   const selectedStore = selectedStoreId ? stores.find((store) => store.id === selectedStoreId) : undefined
   const recommendations = useMemo(
@@ -82,6 +95,11 @@ export default function App() {
     savingRevealedTracked.current = false
     urgeRatingTracked.current = false
     trackingStartedAt.current = null
+    setTrackingControlsLocked(false)
+    if (trackingUnlockTimeout.current !== null) {
+      window.clearTimeout(trackingUnlockTimeout.current)
+      trackingUnlockTimeout.current = null
+    }
   }
 
   const goHome = () => {
@@ -91,10 +109,14 @@ export default function App() {
     setSelectedProduct(null)
     setDetailNotice(null)
     setCartNotice(null)
+    setInitialUrgeRating(null)
+    initialUrgeRatingTracked.current = false
     resetRitualState()
   }
 
   const startFlow = () => {
+    if (flowStarted.current) analyticsSessionId.current = createAnalyticsSessionId()
+    flowStarted.current = true
     if (history.entries.length > 0) {
       const lastCompleted = history.entries[0]
       const daysSinceLastSessionBand = getDaysSinceLastSessionBand(lastCompleted.createdAt)
@@ -110,6 +132,8 @@ export default function App() {
     setSelectedProduct(null)
     setDetailNotice(null)
     setCartNotice(null)
+    setInitialUrgeRating(null)
+    initialUrgeRatingTracked.current = false
     resetRitualState()
   }
 
@@ -117,7 +141,7 @@ export default function App() {
 
   const showCart = () => {
     setCartNotice(null)
-    const cartMode = selectedMode ?? stores.find((store) => store.id === cart.items[0]?.storeId)?.mode ?? 'shopping'
+    const cartMode = stores.find((store) => store.id === cart.items[0]?.storeId)?.mode ?? selectedMode ?? 'shopping'
     trackEvent('cart_viewed', {
       item_count: cart.itemCount,
       mode: cartMode,
@@ -128,6 +152,14 @@ export default function App() {
   }
 
   const pickMode = (mode: AppMode) => {
+    if (initialUrgeRating && !initialUrgeRatingTracked.current) {
+      trackEvent('urge_rating_submitted', {
+        moment: 'before',
+        rating: initialUrgeRating,
+        session_id: analyticsSessionId.current,
+      })
+      initialUrgeRatingTracked.current = true
+    }
     trackEvent('mode_selected', { mode, session_id: analyticsSessionId.current })
     setSelectedMode(mode)
     setSelectedStoreId(null)
@@ -214,6 +246,12 @@ export default function App() {
   }
 
   const handleAddToCart = (product: Product) => {
+    const cartStoreId = cart.items[0]?.storeId
+    if (cartStoreId && cartStoreId !== product.storeId) {
+      const cartStoreName = stores.find((store) => store.id === cartStoreId)?.name ?? 'otra tienda'
+      setDetailNotice(`Tu carrito ya pertenece a ${cartStoreName}. Vacíalo antes de agregar productos de otra tienda.`)
+      return
+    }
     const existingItem = cart.items.find((item) => item.productId === product.id)
     const canAdd = (existingItem?.quantity ?? 0) < MAX_CART_ITEM_QUANTITY && cart.itemCount < MAX_CART_TOTAL_ITEMS
     if (canAdd) {
@@ -234,8 +272,12 @@ export default function App() {
 
     const firstItemStore = stores.find((store) => store.id === cart.items[0].storeId)
     const cartStoreIds = new Set(cart.items.map((item) => item.storeId))
-    const checkoutStore = cartStoreIds.size === 1 ? firstItemStore ?? selectedStore : undefined
-    const checkoutMode = selectedMode ?? checkoutStore?.mode ?? 'shopping'
+    if (cartStoreIds.size !== 1) {
+      setCartNotice('Tu carrito contiene productos de tiendas distintas. Deja productos de una sola tienda antes de continuar.')
+      return
+    }
+    const checkoutStore = firstItemStore ?? selectedStore
+    const checkoutMode = checkoutStore?.mode ?? selectedMode ?? 'shopping'
 
     trackEvent('fake_checkout_started', {
       item_count: cart.itemCount,
@@ -248,8 +290,9 @@ export default function App() {
       items: cart.items.map((item) => ({ ...item })),
       mode: checkoutMode,
       storeId: checkoutStore?.id ?? firstItemStore?.id ?? 'flash-market',
-      storeName: checkoutStore?.name ?? 'Varias tiendas ficticias',
+      storeName: checkoutStore?.name ?? 'Tienda ficticia',
       subtotalInCents: cart.subtotal,
+      initialUrgeRating: initialUrgeRating ?? undefined,
     })
     setTrackingStep(0)
     setResultUrgeRating(null)
@@ -262,6 +305,7 @@ export default function App() {
     savingRevealedTracked.current = false
     urgeRatingTracked.current = false
     trackingStartedAt.current = null
+    setTrackingControlsLocked(false)
     setScreen('checkout')
   }
 
@@ -286,6 +330,12 @@ export default function App() {
       })
       trackingStartedTracked.current = true
     }
+    setTrackingControlsLocked(true)
+    if (trackingUnlockTimeout.current !== null) window.clearTimeout(trackingUnlockTimeout.current)
+    trackingUnlockTimeout.current = window.setTimeout(() => {
+      setTrackingControlsLocked(false)
+      trackingUnlockTimeout.current = null
+    }, 1_500)
     setTrackingStep(0)
     setScreen('tracking')
   }
@@ -307,6 +357,7 @@ export default function App() {
   }
 
   const advanceTracking = () => {
+    if (trackingControlsLocked) return
     if (trackingStep < 3) {
       setTrackingStep((current) => current + 1)
       return
@@ -315,6 +366,7 @@ export default function App() {
   }
 
   const skipTracking = () => {
+    if (trackingControlsLocked) return
     revealSaving()
   }
 
@@ -327,6 +379,15 @@ export default function App() {
     if (!ritualSnapshot || resultSaved || resultSaveLock.current) return
     resultSaveLock.current = true
 
+    if (resultUrgeRating && !urgeRatingTracked.current) {
+      trackEvent('urge_rating_submitted', {
+        moment: 'after',
+        rating: resultUrgeRating,
+        session_id: analyticsSessionId.current,
+      })
+      urgeRatingTracked.current = true
+    }
+
     const now = new Date()
     const entry: GhostCartHistoryEntry = {
       id: createLocalId(),
@@ -337,6 +398,7 @@ export default function App() {
       items: ritualSnapshot.items.map((item) => ({ ...item })),
       subtotalAvoidedInCents: ritualSnapshot.subtotalInCents,
       categories: [...new Set(ritualSnapshot.items.map((item) => item.category))],
+      initialUrgeRating: ritualSnapshot.initialUrgeRating,
       urgeRating: resultUrgeRating ?? undefined,
       stillWantsToBuy: stillWantsToBuy ?? undefined,
       createdAt: now.toISOString(),
@@ -386,13 +448,6 @@ export default function App() {
 
   const recordUrgeRating = (rating: UrgeRating) => {
     setResultUrgeRating(rating)
-    if (urgeRatingTracked.current) return
-    urgeRatingTracked.current = true
-    trackEvent('urge_rating_submitted', {
-      moment: 'after',
-      rating,
-      session_id: analyticsSessionId.current,
-    })
   }
 
   const backFromCart = () => {
@@ -434,7 +489,16 @@ export default function App() {
         />
       )
     }
-    if (screen === 'modes') return <ModeSelectorScreen onBack={goHome} onPick={pickMode} />
+    if (screen === 'modes') {
+      return (
+        <ModeSelectorScreen
+          initialUrgeRating={initialUrgeRating}
+          onBack={goHome}
+          onPick={pickMode}
+          onUrgeRatingChange={setInitialUrgeRating}
+        />
+      )
+    }
     if (screen === 'cart') {
       return (
         <CartScreen
@@ -459,6 +523,7 @@ export default function App() {
     if (screen === 'tracking' && ritualSnapshot) {
       return (
         <TrackingScreen
+          controlsLocked={trackingControlsLocked}
           onAdvance={advanceTracking}
           onBack={() => setScreen('checkout')}
           onSkip={skipTracking}

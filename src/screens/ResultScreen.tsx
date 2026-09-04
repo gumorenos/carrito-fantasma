@@ -19,11 +19,11 @@ type ResultScreenProps = {
 }
 
 const urgeOptions: Array<{ value: UrgeRating; label: string }> = [
-  { value: 1, label: 'Nada' },
-  { value: 2, label: 'Poquito' },
-  { value: 3, label: 'Algo' },
-  { value: 4, label: 'Bastante' },
-  { value: 5, label: 'Mucho' },
+  { value: 1, label: 'Muy leve' },
+  { value: 2, label: 'Leve' },
+  { value: 3, label: 'Medio' },
+  { value: 4, label: 'Fuerte' },
+  { value: 5, label: 'Muy fuerte' },
 ]
 
 const wantsOptions: Array<{ value: StillWantsToBuy; label: string }> = [
@@ -57,15 +57,18 @@ export function ResultScreen({
         <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-ghost-muted">Es una estimación del carrito ficticio, no un saldo bancario. Te diste tiempo antes de decidir.</p>
       </div>
 
-      <div className="rounded-[2rem] border border-ghost-line bg-white p-5 shadow-card sm:p-7">
+      <div className="rounded-[2rem] border border-ghost-line bg-white p-4 shadow-card sm:p-7">
         <div>
           <h2 className="text-xl font-black tracking-tight text-ghost-ink">Una pregunta rápida</h2>
-          <p className="mt-1 text-sm leading-6 text-ghost-muted">Tu respuesta es opcional y solo se guarda en este dispositivo.</p>
+          <p className="mt-1 text-sm leading-6 text-ghost-muted">Tu respuesta es opcional. No pedimos texto libre ni datos personales.</p>
         </div>
 
         <fieldset className="mt-6">
-          <legend className="text-sm font-black text-ghost-ink">¿Bajó tu impulso?</legend>
-          <div className="mt-3 grid grid-cols-5 gap-2" role="radiogroup" aria-label="Cuánto bajó tu impulso">
+          <legend className="text-sm font-black text-ghost-ink">¿Qué tan fuerte está el impulso ahora?</legend>
+          {snapshot.initialUrgeRating && (
+            <p className="mt-1 text-xs leading-5 text-ghost-muted">Al comenzar marcaste {snapshot.initialUrgeRating}/5.</p>
+          )}
+          <div className="mt-3 grid grid-cols-5 gap-1" role="radiogroup" aria-label="Intensidad final del impulso">
             {urgeOptions.map((option) => (
               <button
                 key={option.value}
