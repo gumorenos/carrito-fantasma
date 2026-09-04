@@ -73,6 +73,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' })
     document.getElementById('main-content')?.focus()
   }, [screen])
 
@@ -622,8 +623,10 @@ export default function App() {
 
   return (
     <AppShell
+      activeScreen={screen}
       cartCount={cart.itemCount}
       onCart={showCart}
+      onExplore={startFlow}
       onHistory={showHistory}
       onHome={goHome}
       showCart={!ritualScreen}

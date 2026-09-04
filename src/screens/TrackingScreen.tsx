@@ -1,5 +1,4 @@
 import { Button } from '../components/Button'
-import { SimulationBadge } from '../components/SimulationBadge'
 import type { RitualSnapshot } from '../types/ritual'
 
 const trackingSteps = [
@@ -23,20 +22,19 @@ export function TrackingScreen({ controlsLocked, snapshot, step, onBack, onAdvan
   const isLastStep = step >= trackingSteps.length - 1
 
   return (
-    <section className="mx-auto flex min-h-[70vh] max-w-xl flex-col justify-center py-6 sm:py-10">
-      <div className="flex items-center justify-between gap-3">
+    <section className="mx-auto flex min-h-[72vh] max-w-xl flex-col justify-center py-3 sm:py-8">
+      <div>
         <button className="inline-flex min-h-11 items-center text-sm font-bold text-ghost-teal hover:text-ghost-tealDark" onClick={onBack} type="button">
           ← Volver al checkout
         </button>
-        <SimulationBadge />
       </div>
-      <div className="mt-10 rounded-[2rem] border border-ghost-line bg-white p-6 text-center shadow-soft sm:p-10">
-        <p className="text-sm font-bold uppercase tracking-[0.18em] text-ghost-coral">Seguimiento simbólico · {snapshot.storeName}</p>
-        <div aria-hidden="true" className="mx-auto mt-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-ghost-mint text-5xl text-ghost-teal">✧</div>
-        <p aria-live="polite" className="mt-8 text-2xl font-black leading-tight tracking-tight text-ghost-ink">{currentStep.title}</p>
+      <div className="mt-4 rounded-3xl border border-ghost-mintStrong bg-white p-6 text-center shadow-soft sm:p-10">
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-ghost-teal">Seguimiento simbólico · {snapshot.storeName}</p>
+        <div aria-hidden="true" className="mx-auto mt-7 flex h-20 w-20 items-center justify-center rounded-2xl bg-ghost-mint text-4xl text-ghost-teal">👻</div>
+        <p aria-live="polite" className="mt-7 text-2xl font-black leading-tight tracking-tight text-ghost-ink sm:text-3xl">{currentStep.title}</p>
         <p className="mx-auto mt-3 max-w-sm leading-7 text-ghost-muted">{currentStep.detail}</p>
 
-        <div className="mt-8 flex items-center justify-center gap-2" aria-label={`Paso ${Math.min(step + 1, trackingSteps.length)} de ${trackingSteps.length}`}>
+        <div className="mt-7 flex items-center justify-center gap-2" aria-label={`Paso ${Math.min(step + 1, trackingSteps.length)} de ${trackingSteps.length}`}>
           {trackingSteps.map((trackingStep, index) => (
             <span
               key={trackingStep.title}
@@ -46,7 +44,7 @@ export function TrackingScreen({ controlsLocked, snapshot, step, onBack, onAdvan
           ))}
         </div>
 
-        <Button className="mt-8 w-full" disabled={controlsLocked} onClick={onAdvance}>
+        <Button className="mt-7 w-full !bg-ghost-teal hover:!bg-ghost-tealDark" disabled={controlsLocked} onClick={onAdvance}>
           {isLastStep ? 'Ver cuánto no gastaste' : 'Continuar'}
         </Button>
         {!isLastStep && (

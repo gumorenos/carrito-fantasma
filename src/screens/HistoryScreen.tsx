@@ -1,7 +1,6 @@
 import { Button } from '../components/Button'
 import { FeedbackLink } from '../components/FeedbackLink'
 import { ProductCard } from '../components/ProductCard'
-import { SimulationBadge } from '../components/SimulationBadge'
 import { productCategoryLabels } from '../data'
 import { getAverageSavedAmount, getFrequentCategories, getMostUsedMode, getTotalSaved } from '../lib/history'
 import { formatPen } from '../lib/money'
@@ -45,14 +44,13 @@ export function HistoryScreen({
   }
 
   return (
-    <section className="mx-auto max-w-2xl space-y-6 py-4 sm:py-10">
+    <section className="mx-auto max-w-3xl space-y-5 py-2 sm:py-8">
       <button className="inline-flex min-h-11 items-center text-sm font-bold text-ghost-teal hover:text-ghost-tealDark" onClick={onBack} type="button">
         ← Volver al inicio
       </button>
       {entries.length === 0 ? (
-        <div className="rounded-[2rem] border border-ghost-line bg-white p-6 text-center shadow-card sm:p-10">
-          <SimulationBadge />
-          <div aria-hidden="true" className="mx-auto mt-8 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-ghost-mint text-4xl text-ghost-teal">✧</div>
+        <div className="rounded-3xl border border-ghost-line bg-white p-6 text-center shadow-card sm:p-10">
+          <div aria-hidden="true" className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-ghost-mint text-3xl text-ghost-teal">✧</div>
           <h1 className="mt-6 text-3xl font-black tracking-tight text-ghost-ink">Tus carritos fantasma</h1>
           <p className="mx-auto mt-3 max-w-sm leading-7 text-ghost-muted">
             Aquí aparecerán tus sesiones completadas. Por ahora no hay cifras inventadas: tu historial empieza cuando tú decidas.
@@ -63,9 +61,8 @@ export function HistoryScreen({
         </div>
       ) : (
         <>
-          <div className="rounded-[2rem] border border-ghost-mintStrong bg-ghost-mint/70 p-6 shadow-card">
-            <SimulationBadge />
-            <p className="mt-7 text-sm font-bold uppercase tracking-[0.16em] text-ghost-coral">Monto decidido no gastar aquí</p>
+          <div className="rounded-3xl border border-ghost-mintStrong bg-ghost-mint/70 p-6 shadow-card">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-ghost-teal">Monto decidido no gastar aquí</p>
             <p className="mt-2 text-4xl font-black tracking-[-0.04em] text-ghost-ink">{formatPen(totalAvoided)}</p>
             <p className="mt-2 text-sm leading-6 text-ghost-muted">Acumulado de {entries.length} {entries.length === 1 ? 'carrito fantasma' : 'carritos fantasma'} en este dispositivo.</p>
             <div className="mt-5 space-y-2 border-t border-ghost-mintStrong/70 pt-4 text-sm font-semibold leading-6 text-ghost-teal">
@@ -76,24 +73,24 @@ export function HistoryScreen({
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-3xl border border-ghost-line bg-white p-4 shadow-card">
+            <div className="rounded-2xl border border-ghost-line bg-white p-4 shadow-card">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-ghost-muted">Completados</p>
               <p className="mt-2 text-2xl font-black text-ghost-ink">{entries.length}</p>
               <p className="mt-1 text-xs font-semibold text-ghost-muted">rituales cerrados</p>
             </div>
-            <div className="rounded-3xl border border-ghost-line bg-white p-4 shadow-card">
+            <div className="rounded-2xl border border-ghost-line bg-white p-4 shadow-card">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-ghost-muted">Ticket promedio</p>
               <p className="mt-2 text-2xl font-black text-ghost-ink">{formatPen(averageAvoided)}</p>
               <p className="mt-1 text-xs font-semibold text-ghost-muted">por carrito evitado</p>
             </div>
-            <div className="col-span-2 rounded-3xl border border-ghost-line bg-white p-4 shadow-card">
+            <div className="col-span-2 rounded-2xl border border-ghost-line bg-white p-4 shadow-card">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-ghost-muted">Modo más usado</p>
               <p className="mt-2 text-xl font-black text-ghost-ink">{mostUsedModeLabel}</p>
               {mostUsedMode && <p className="mt-1 text-xs font-semibold text-ghost-muted">Tu historial marca una preferencia, no una etiqueta.</p>}
             </div>
           </div>
 
-          <section className="rounded-3xl border border-ghost-line bg-white p-5 shadow-card" aria-labelledby="frequent-categories-title">
+          <section className="rounded-2xl border border-ghost-line bg-white p-5 shadow-card" aria-labelledby="frequent-categories-title">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 id="frequent-categories-title" className="text-xl font-black tracking-tight text-ghost-ink">Categorías frecuentes</h2>
@@ -121,7 +118,7 @@ export function HistoryScreen({
               const itemCount = entry.items.reduce((total, item) => total + item.quantity, 0)
               const modeLabel = entry.mode === 'food' ? 'Pedir comida' : 'Comprar algo'
               return (
-                <article key={entry.id} className="rounded-3xl border border-ghost-line bg-white p-4 shadow-card">
+                <article key={entry.id} className="rounded-2xl border border-ghost-line bg-white p-4 shadow-card">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-bold uppercase tracking-[0.12em] text-ghost-muted">{formatHistoryDate(entry.createdAt)}</p>

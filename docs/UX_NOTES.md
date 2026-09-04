@@ -113,7 +113,7 @@ No crear rachas, niveles, rankings ni mensajes de pérdida por no volver.
 - Cada tienda ficticia puede tener un acento, pero debe compartir el sistema visual de Carrito Fantasma.
 - Las imágenes deben ser locales, licenciadas para uso, propias o generadas; conservar trazabilidad de su origen.
 
-La dirección sugerida es juguetona y limpia, con contraste alto y celebración sobria. No decidir una identidad definitiva antes de probar comprensión.
+La dirección aprobada es juguetona, comercial y compacta antes del checkout, con `mockup_marketplace.png` como referencia primaria. Después del checkout cambia progresivamente a un tono calmado con celebración sobria. Esta decisión está registrada en `MOCKUP_REVIEW.md` y `DECISIONS.md`; no reinterpretarla como una app genérica de bienestar.
 
 ## Accesibilidad
 

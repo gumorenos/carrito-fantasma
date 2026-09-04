@@ -171,6 +171,16 @@ Estados: `Aceptada`, `Propuesta`, `En prueba`, `Reemplazada` o `Descartada`.
 - **Consecuencias:** cada cambio debe ejecutar `npm test`, además de lint y build; los recorridos móviles siguen requiriendo QA manual.
 - **Reemplaza o depende de:** D-003 y D-013.
 
+### D-020 — Marketplace es la referencia visual primaria
+
+- **Fecha:** 2026-09-04
+- **Estado:** Aceptada
+- **Decisión:** usar `mockup_marketplace.png` como referencia visual primaria para Home, tiendas, catálogo, producto, carrito y checkout falso. `mockup_bienestar.png` queda como referencia secundaria únicamente para la transición calmada en Tracking, Result e History.
+- **Razón:** la hipótesis requiere reproducir un ritual de compra reconocible y activo antes de entregar un cierre emocional; la dirección de bienestar por sí sola ocultaba esa conducta central.
+- **Alternativas consideradas:** mantener Bienestar como identidad principal y Marketplace solo como gramática funcional; reemplazada por decisión explícita del Product Owner.
+- **Consecuencias:** mayor densidad, imágenes y precios protagonistas, header cálido y navegación comercial compacta antes del checkout; después, transición a una presentación más serena. Se mantienen disclosure de simulación, identidad original, mobile-first, privacidad y límites de IP.
+- **Reemplaza o depende de:** reemplaza la recomendación visual previa de `docs/MOCKUP_REVIEW.md`; depende de D-004, D-006 y D-017.
+
 ## Decisiones pendientes
 
 Estas preguntas no bloquean la documentación, pero deben resolverse en el momento indicado:

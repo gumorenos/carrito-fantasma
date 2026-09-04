@@ -93,14 +93,14 @@ Los ratings antes/después usan `urge_rating_submitted`. También se observan `s
 
 ## Dirección de diseño
 
-La propuesta actual combina:
+La dirección aprobada usa `mockup_marketplace.png` como referencia primaria para Home, tiendas, catálogo, producto, carrito y checkout:
 
-- una identidad calmada y propia, con espacio visual y lenguaje no culpabilizante;
-- patrones familiares de catálogo, detalle y carrito para que el ritual se entienda;
-- tiendas y productos completamente ficticios;
-- una señal visible de que todo es simulación y no habrá cobro ni envío.
+- composición comercial compacta, imágenes y precios protagonistas y mayor densidad de browse;
+- tiendas y productos completamente ficticios con una identidad amarilla/ciruela propia;
+- una señal persistente “Compra fantasma · sin cobro”;
+- transición a un tono menta más calmado en Tracking, Result e History.
 
-La decisión está documentada en [MOCKUP_REVIEW.md](docs/MOCKUP_REVIEW.md). No se deben copiar logos, paletas, layouts o recursos identificables de marcas reales.
+La decisión está documentada en [MOCKUP_REVIEW.md](docs/MOCKUP_REVIEW.md). La referencia es el mockup, no un marketplace real: no se deben copiar logos, trade dress, layouts propietarios o recursos identificables de terceros.
 
 ## Arquitectura prevista
 

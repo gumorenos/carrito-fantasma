@@ -1,6 +1,5 @@
 import { Button } from '../components/Button'
 import { ModeCard } from '../components/ModeCard'
-import { SimulationBadge } from '../components/SimulationBadge'
 import type { AppMode } from '../types/product'
 
 type HomeScreenProps = {
@@ -11,50 +10,66 @@ type HomeScreenProps = {
 
 export function HomeScreen({ onStart, onHistory, onSelectMode }: HomeScreenProps) {
   return (
-    <div className="space-y-8 pb-4">
-      <section className="relative overflow-hidden rounded-[2rem] border border-ghost-line bg-white px-5 py-8 shadow-soft sm:px-10 sm:py-12">
-        <div aria-hidden="true" className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-ghost-mint opacity-80 blur-2xl" />
-        <div aria-hidden="true" className="absolute -bottom-24 left-1/3 h-44 w-44 rounded-full bg-ghost-sand opacity-70 blur-2xl" />
-        <div className="relative max-w-2xl">
-          <SimulationBadge />
-          <p className="mt-8 text-sm font-bold uppercase tracking-[0.18em] text-ghost-coral">Una pausa para decidir</p>
-          <h1 className="mt-3 max-w-xl text-4xl font-black leading-[1.04] tracking-[-0.04em] text-ghost-ink sm:text-6xl">
-            ¿Te dieron ganas de comprar?
-          </h1>
-          <p className="mt-5 max-w-lg text-base leading-7 text-ghost-muted sm:text-lg">
-            Llena un carrito ficticio, haz el ritual completo y mira cuánto no gastaste. Nada se cobra y nada llega a tu puerta.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Button className="w-full sm:w-auto" onClick={onStart}>
-              Soltar un impulso
-              <span aria-hidden="true" className="text-lg">→</span>
-            </Button>
-            <Button className="w-full sm:w-auto" onClick={onHistory} variant="secondary">
-              Ver historial
-            </Button>
+    <div className="space-y-6 pb-3">
+      <section className="overflow-hidden rounded-2xl border border-ghost-line bg-white shadow-market">
+        <div className="grid lg:grid-cols-[1.35fr_0.65fr]">
+          <div className="bg-ghost-sunSoft p-5 sm:p-8 lg:p-10">
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-ghost-coral">Compra de mentira · ahorro de verdad</p>
+            <h1 className="mt-2 max-w-2xl text-[2rem] font-black leading-[1.04] tracking-[-0.045em] text-ghost-ink sm:text-5xl">
+              Llena el carrito. Quédate con tu plata.
+            </h1>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-ghost-muted sm:text-base sm:leading-7">
+              Recorre tiendas ficticias, haz un checkout falso y deja que el impulso termine sin cobrarte nada.
+            </p>
+            <div className="mt-5 flex flex-col gap-2.5 min-[420px]:flex-row">
+              <Button className="w-full min-[420px]:w-auto" onClick={onStart}>
+                Soltar un impulso <span aria-hidden="true">→</span>
+              </Button>
+              <Button className="w-full min-[420px]:w-auto" onClick={onHistory} variant="secondary">
+                Ver historial
+              </Button>
+            </div>
           </div>
+          <aside className="border-t border-ghost-line bg-white p-5 lg:border-l lg:border-t-0 lg:p-7">
+            <p className="text-xs font-black uppercase tracking-[0.12em] text-ghost-plum">El ritual en 3 pasos</p>
+            <ol className="mt-4 grid gap-3 min-[500px]:grid-cols-3 lg:grid-cols-1">
+              {[
+                ['1', 'Elige algo', 'Navega productos ficticios.'],
+                ['2', 'No pagues', 'Confirma el checkout fantasma.'],
+                ['3', 'Mira el ahorro', 'Cierra el impulso con tu total.'],
+              ].map(([number, title, detail]) => (
+                <li key={number} className="flex items-start gap-3">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-ghost-sun text-xs font-black text-ghost-plum">{number}</span>
+                  <span>
+                    <span className="block text-sm font-black text-ghost-ink">{title}</span>
+                    <span className="mt-0.5 block text-xs leading-4 text-ghost-muted">{detail}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </aside>
         </div>
       </section>
 
-      <section aria-labelledby="modes-title" className="space-y-4">
-        <div className="flex items-end justify-between gap-4 px-1">
+      <section aria-labelledby="modes-title">
+        <div className="mb-3 flex items-end justify-between gap-3">
           <div>
-            <p className="text-sm font-bold text-ghost-teal">Elige tu ritual</p>
-            <h2 id="modes-title" className="mt-1 text-2xl font-black tracking-tight text-ghost-ink">Dos formas de soltarlo</h2>
+            <p className="text-xs font-black uppercase tracking-[0.12em] text-ghost-plum">¿Qué quieres dejar pasar?</p>
+            <h2 id="modes-title" className="mt-1 text-2xl font-black tracking-tight text-ghost-ink">Empieza a explorar</h2>
           </div>
-          <span className="hidden text-xs font-semibold text-ghost-muted sm:block">Sin cuenta · sin tarjeta</span>
+          <span className="hidden text-xs font-bold text-ghost-muted sm:block">Sin cuenta · sin tarjeta</span>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <ModeCard
-            description="Gadgets, decoración y esas cosas que aparecen de pronto en tu wishlist."
-            icon="✦"
+            description="Gadgets, decoración, gaming y caprichos de marketplace."
+            icon="🛒"
             mode={'shopping' satisfies AppMode}
             onClick={() => onSelectMode('shopping')}
             title="Comprar algo"
           />
           <ModeCard
-            description="Hamburguesas, sushi, postres y antojos que pueden esperar un poquito."
-            icon="◉"
+            description="Hamburguesas, sushi, postres y antojos de delivery."
+            icon="🍔"
             mode={'food' satisfies AppMode}
             onClick={() => onSelectMode('food')}
             title="Pedir comida"
@@ -62,12 +77,12 @@ export function HomeScreen({ onStart, onHistory, onSelectMode }: HomeScreenProps
         </div>
       </section>
 
-      <aside className="rounded-3xl border border-ghost-mintStrong bg-ghost-mint/60 p-5 sm:flex sm:items-center sm:justify-between sm:gap-6">
+      <aside className="flex items-start gap-3 rounded-xl border border-ghost-plum/15 bg-white px-4 py-3 shadow-sm">
+        <span aria-hidden="true" className="mt-0.5 text-lg">👻</span>
         <div>
-          <p className="text-sm font-extrabold text-ghost-ink">Hecho para darte tiempo</p>
-          <p className="mt-1 text-sm leading-6 text-ghost-muted">No vendemos nada. No pedimos tarjeta. Es una simulación.</p>
+          <p className="text-sm font-black text-ghost-ink">Nada de esto está a la venta.</p>
+          <p className="mt-0.5 text-xs leading-5 text-ghost-muted">No pedimos tarjeta, dirección ni datos personales. Todo es una simulación local.</p>
         </div>
-        <span aria-hidden="true" className="mt-4 block text-3xl text-ghost-teal sm:mt-0">✧</span>
       </aside>
     </div>
   )

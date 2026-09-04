@@ -1,5 +1,3 @@
-import { Button } from '../components/Button'
-import { SimulationBadge } from '../components/SimulationBadge'
 import { StoreCard } from '../components/StoreCard'
 import { products, stores } from '../data'
 import type { AppMode, Store } from '../types/product'
@@ -12,32 +10,22 @@ type StoreSelectorScreenProps = {
 
 export function StoreSelectorScreen({ mode, onBack, onSelect }: StoreSelectorScreenProps) {
   const modeStores = stores.filter((store) => store.mode === mode)
-  const modeLabel = mode === 'food' ? 'tu antojo' : 'tu compra'
 
   return (
-    <section className="mx-auto max-w-2xl space-y-6 py-4 sm:py-10">
-      <button className="inline-flex min-h-11 items-center text-sm font-bold text-ghost-teal hover:text-ghost-tealDark" onClick={onBack} type="button">
-        ← Cambiar modo
-      </button>
-      <div>
-        <SimulationBadge />
-        <p className="mt-8 text-sm font-bold uppercase tracking-[0.18em] text-ghost-coral">Paso 2 · elegir tienda</p>
-        <h1 className="mt-3 text-4xl font-black tracking-[-0.04em] text-ghost-ink">Dale un escenario a {modeLabel}.</h1>
-        <p className="mt-4 max-w-xl leading-7 text-ghost-muted">Todas las tiendas son ficticias. Escoge la que más se parezca a lo que te estaba tentando hoy.</p>
-      </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+    <section className="space-y-5 py-1 sm:py-4">
+      <button className="inline-flex min-h-11 items-center text-sm font-black text-ghost-plum hover:text-ghost-plumDark" onClick={onBack} type="button">← Cambiar modo</button>
+      <header className="flex flex-col gap-2 border-b border-ghost-line pb-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.14em] text-ghost-coral">Tiendas ficticias</p>
+          <h1 className="mt-1 text-3xl font-black tracking-[-0.04em] text-ghost-ink">{mode === 'food' ? '¿De dónde viene el antojo?' : 'Elige dónde explorar'}</h1>
+        </div>
+        <p className="max-w-md text-sm leading-5 text-ghost-muted">Todo se ve familiar, pero nada se vende ni llega a tu puerta.</p>
+      </header>
+      <div className={`grid grid-cols-2 gap-3 sm:grid-cols-3 ${mode === 'food' ? 'max-w-[270px]' : ''}`}>
         {modeStores.map((store) => (
-          <StoreCard
-            key={store.id}
-            onClick={() => onSelect(store)}
-            productCount={products.filter((product) => product.storeId === store.id).length}
-            store={store}
-          />
+          <StoreCard key={store.id} onClick={() => onSelect(store)} productCount={products.filter((product) => product.storeId === store.id).length} store={store} />
         ))}
       </div>
-      <Button className="w-full sm:w-auto" onClick={onBack} variant="secondary">
-        Volver a modos
-      </Button>
     </section>
   )
 }

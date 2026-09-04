@@ -6,9 +6,9 @@ Este documento es la puerta de entrada para Claude Code, Codex, OpenClaw y cualq
 
 ## Estado actual que debe asumirse
 
-El MVP funcional está implementado y QA lo dejó apto para demos internas y un piloto cerrado/supervisado. La rama publicada es `codex/carrito-fantasma-mvp-pwa` y el último commit publicado es `e6d8dbf2d7de43cea64b9f33b55746192536d489` (`qa: close mvp review and harden flows`). El checkout local está en `D:\projects\codex\carrito-fantasma`. La revisión P0/P1 descrita en `docs/QA_REPORT.md` está actualmente en el working tree y aún no tiene commit propio.
+El MVP funcional está implementado y QA lo dejó apto para demos internas y un piloto cerrado/supervisado. La rama de trabajo es `codex/carrito-fantasma-mvp-pwa`; el cierre P0/P1 quedó aislado en `18447f6` (`fix: close internal pilot gaps`) y la alineación visual vive en el commit `style: align MVP with marketplace mockup`. El checkout local está en `D:\projects\codex\carrito-fantasma`.
 
-El flujo completo ya existe: home (con tarjetas de modo accionables), selección de modo y tienda, catálogo, detalle, carrito persistente, checkout falso, tracking simbólico, resultado, encuesta, historial y recomendaciones locales. El checkout actual de trabajo añade rating inicial opcional, confirmación al cambiar de tienda/modo con carrito activo, CTA de historial y feedback externo configurable. No hay deploy público confirmado. Esta nota debe actualizarse si cambia producto, arquitectura, privacidad o alcance.
+El flujo completo ya existe: home (con tarjetas de modo accionables), selección de modo y tienda, catálogo, detalle, carrito persistente, checkout falso, tracking simbólico, resultado, encuesta, historial y recomendaciones locales. Incluye rating inicial opcional, confirmación al cambiar de tienda/modo con carrito activo, CTA de historial y feedback externo configurable. `mockup_marketplace.png` es la referencia visual aprobada para Home/browse/checkout; Tracking, Result e History cambian a un tono calmado. No hay deploy público confirmado.
 
 ## Ficha operativa del MVP
 
@@ -67,7 +67,7 @@ npm test
 npm run build
 ```
 
-El build de seguimiento transformó 61 módulos y generó aproximadamente 1.76 kB de HTML, 19.61 kB de CSS y 220.84 kB de JavaScript (65.43 kB gzip). `dist/` está excluido de Git.
+El build posterior a la alineación visual transformó 63 módulos y generó aproximadamente 1.76 kB de HTML, 24.78 kB de CSS y 225.76 kB de JavaScript (67.32 kB gzip). `dist/` está excluido de Git.
 
 ### 6. Estructura real
 
@@ -76,7 +76,7 @@ src/
   App.tsx                 composición y navegación por estado
   main.tsx                entrada React
   assets/                 recursos propios
-  components/             shell, botones, cards, badges y feedback opcional
+  components/             shell, botones, cards, visuales ficticios, badges y feedback opcional
   data/                   tiendas, productos y categorías
   hooks/                  useCart y useHistory
   lib/                    cart, history, money, storage, analytics, feedback y tests
@@ -121,17 +121,17 @@ Hay allowlist de propiedades, validación de enums/ratings/cantidades, bandas pa
 
 ### 11. Estado de PWA
 
-Manifest propio con `name: Carrito Fantasma`, `short_name: Fantasma`, idioma `es-PE`, `display: standalone`, orientación portrait, theme color propio e iconos SVG. `public/sw.js` usa red primero y fallback de cache para el shell. Manifest, service worker y offline después de primera carga fueron validados en Chromium.
+Manifest propio con `name: Carrito Fantasma`, `short_name: Fantasma`, idioma `es-PE`, `display: standalone`, orientación portrait, theme color amarillo propio e iconos SVG alineados a la marca. `public/sw.js` usa red primero y fallback de cache para el shell. Manifest, service worker y offline después de primera carga fueron validados en Chromium.
 
 Pendiente: instalación y pruebas de iconos/OG image en Safari/iOS, Android y previews de WhatsApp. Si SVG presenta incompatibilidades, generar PNG propios.
 
 ### 12. Estado de deploy
 
-El build estático es compatible con Vercel y Cloudflare Pages (`npm run build`, salida `dist`). No existe deploy público ni dominio productivo confirmado. El código validado está publicado en GitHub en `codex/carrito-fantasma-mvp-pwa`, último commit `e6d8dbf2d7de43cea64b9f33b55746192536d489`.
+El build estático es compatible con Vercel y Cloudflare Pages (`npm run build`, salida `dist`). No existe deploy público ni dominio productivo confirmado. El código validado se mantiene en GitHub en `codex/carrito-fantasma-mvp-pwa`.
 
 ### 13. Último QA
 
-Ver [`docs/QA_REPORT.md`](QA_REPORT.md) para el seguimiento y [`docs/QA_REPORT_2026-09-04.md`](QA_REPORT_2026-09-04.md) para la regresión base. En el seguimiento: 3 archivos y 16 tests Vitest, lint, build, `npm ls --depth=0`, `node --check public/sw.js` y `git diff --check`: aprobados. Se retestearon Home directo, rating omitido, confirmación de carrito, flujo food, CTA de historial y ocultamiento de feedback sin configuración. La suite no sustituye pruebas en teléfonos reales.
+Ver [`docs/QA_REPORT.md`](QA_REPORT.md) para el cierre P0/P1, [`docs/QA_REPORT_2026-09-04.md`](QA_REPORT_2026-09-04.md) para la regresión base y [`docs/VISUAL_QA_REPORT.md`](VISUAL_QA_REPORT.md) para la alineación visual. En el último seguimiento: 3 archivos y 16 tests Vitest, lint, build, audit de producción y `git diff --check`: aprobados. Se capturaron Home, catálogo, carrito y resultado a 390 px y se completó shopping. La herramienta de navegador impidió terminar la recaptura de food y los demás anchos; la suite no sustituye pruebas en teléfonos reales.
 
 El MVP está listo para demos internas/piloto cerrado, no para tráfico público amplio.
 
@@ -145,13 +145,15 @@ El MVP está listo para demos internas/piloto cerrado, no para tráfico público
 - Recargar durante tracking vuelve a Home con el carrito, pero no reanuda el paso exacto.
 - La aceptación destructiva de borrar historial no se ejecutó durante la regresión base; diálogo y cancelación sí fueron verificados.
 - La instalación de Vitest reportó 5 vulnerabilidades en el árbol completo de desarrollo; `npm audit --omit=dev --audit-level=high` quedó limpio para producción. No ejecutar `npm audit fix --force` sin revisar impacto.
+- Falta QA visual real a 360, 430, 768 y desktop; la revisión visual automatizada solo pudo completarse a 390 px.
+- Las ilustraciones actuales usan emojis estilizados y pueden variar entre plataformas; son placeholders de piloto.
 - Hacen falta cinco pruebas observadas con usuarios reales.
 
 ### 15. Próximos pasos recomendados
 
-1. Renombrar las tiendas con colisión y registrar la decisión en `DECISIONS.md`.
-2. Crear staging HTTPS en Vercel o Cloudflare Pages y configurar `VITE_FEEDBACK_URL` solo con un formulario externo aprobado.
-3. Probar en un Android y un iPhone reales, incluida instalación, confirmaciones, rating opcional y compartir por WhatsApp.
+1. Crear staging HTTPS en Vercel o Cloudflare Pages y configurar `VITE_FEEDBACK_URL` solo con un formulario externo aprobado.
+2. Probar la UI a 360, 390, 430, 768 y desktop; completar shopping y food en un Android y un iPhone reales.
+3. Renombrar las tiendas con colisión y registrar la decisión en `DECISIONS.md` antes de exposición pública.
 4. Ejecutar cinco sesiones observadas y medir comprensión, completion, alivio y repetición.
 5. Configurar PostHog solo si la medición noop resulta insuficiente; hacer una prueba E2E con clave de staging.
 6. Repetir `npm test`, lint, build y el recorrido afectado después de cada cambio.
@@ -163,6 +165,7 @@ El MVP está listo para demos internas/piloto cerrado, no para tráfico público
 - Toda compra, pedido, pago, tracking y entrega son ficticios y deben estar rotulados como simulación.
 - Ratings antes/después son opcionales y usan escala 1–5 comparable.
 - El tono es divertido, claro y no culpabilizante.
+- `mockup_marketplace.png` es la referencia visual primaria durante Home/browse/producto/carrito/checkout; `mockup_bienestar.png` solo guía la transición calmada posterior.
 - Carrito, historial y memoria son locales; no hay cuentas ni sincronización.
 - Analytics es mínimo, opcional y centralizado.
 - El feedback cualitativo, si se habilita, vive fuera de la app y se abre solo por acción explícita; no se recopilan emails dentro del flujo.

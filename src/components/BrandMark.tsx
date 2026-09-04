@@ -10,12 +10,12 @@ export function BrandMark({ compact = false }: BrandMarkProps) {
       <img
         alt=""
         aria-hidden="true"
-        className={compact ? 'h-9 w-9 rounded-xl' : 'h-11 w-11 rounded-2xl'}
+        className={compact ? 'h-9 w-9 rounded-lg shadow-sm' : 'h-11 w-11 rounded-xl shadow-sm'}
         src={ghostMark}
       />
       <div className={`${compact ? 'max-[359px]:hidden' : ''} leading-tight`}>
-        <p className={`${compact ? 'text-xs' : 'text-sm'} font-extrabold tracking-tight text-ghost-ink`}>Carrito</p>
-        <p className={`${compact ? 'text-xs' : 'text-sm'} font-extrabold tracking-tight text-ghost-teal`}>Fantasma</p>
+        <p className={`${compact ? 'text-xs' : 'text-sm'} font-black tracking-[-0.02em] text-ghost-ink`}>Carrito</p>
+        <p className={`${compact ? 'text-xs' : 'text-sm'} font-black tracking-[-0.02em] text-ghost-plum`}>Fantasma</p>
       </div>
     </div>
   )

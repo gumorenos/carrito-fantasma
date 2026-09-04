@@ -1,6 +1,5 @@
 import { Button } from '../components/Button'
 import { FeedbackLink } from '../components/FeedbackLink'
-import { SimulationBadge } from '../components/SimulationBadge'
 import { formatPen } from '../lib/money'
 import type { StillWantsToBuy } from '../types/history'
 import type { UrgeRating } from '../types/product'
@@ -48,19 +47,16 @@ export function ResultScreen({
   onHistory,
 }: ResultScreenProps) {
   return (
-    <section className="mx-auto max-w-xl space-y-6 py-4 sm:py-10">
-      <div className="flex justify-end">
-        <SimulationBadge />
-      </div>
-      <div className="rounded-[2rem] border border-ghost-mintStrong bg-white p-6 text-center shadow-soft sm:p-10">
-        <div aria-hidden="true" className="mx-auto flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-ghost-mint text-4xl text-ghost-teal">✧</div>
-        <p className="mt-7 text-sm font-bold uppercase tracking-[0.18em] text-ghost-coral">Ritual completado</p>
+    <section className="mx-auto max-w-xl space-y-5 py-2 sm:py-8">
+      <div className="rounded-3xl border border-ghost-mintStrong bg-white p-6 text-center shadow-soft sm:p-10">
+        <div aria-hidden="true" className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-ghost-mint text-3xl text-ghost-teal">✧</div>
+        <p className="mt-5 text-xs font-black uppercase tracking-[0.16em] text-ghost-teal">Ritual completado</p>
         <h1 className="mt-3 text-4xl font-black leading-tight tracking-[-0.05em] text-ghost-ink sm:text-5xl">No gastaste {formatPen(snapshot.subtotalInCents)}</h1>
         <p className="mt-4 text-lg font-bold text-ghost-teal">El carrito se fue. Tu plata no.</p>
         <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-ghost-muted">Es una estimación del carrito ficticio, no un saldo bancario. Te diste tiempo antes de decidir.</p>
       </div>
 
-      <div className="rounded-[2rem] border border-ghost-line bg-white p-4 shadow-card sm:p-7">
+      <div className="rounded-2xl border border-ghost-line bg-white p-4 shadow-card sm:p-6">
         <div>
           <h2 className="text-xl font-black tracking-tight text-ghost-ink">Una pregunta rápida</h2>
           <p className="mt-1 text-sm leading-6 text-ghost-muted">Tu respuesta es opcional. No pedimos texto libre ni datos personales.</p>
@@ -76,7 +72,7 @@ export function ResultScreen({
               <button
                 key={option.value}
                 aria-checked={urgeRating === option.value}
-                className={`flex min-h-16 flex-col items-center justify-center rounded-2xl border px-1 text-center transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ghost-teal ${urgeRating === option.value ? 'border-ghost-teal bg-ghost-teal text-white' : 'border-ghost-line bg-ghost-mist text-ghost-ink hover:border-ghost-mintStrong'}`}
+                className={`flex min-h-16 flex-col items-center justify-center rounded-lg border px-1 text-center transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ghost-teal ${urgeRating === option.value ? 'border-ghost-teal bg-ghost-teal text-white' : 'border-ghost-line bg-ghost-mist text-ghost-ink hover:border-ghost-mintStrong'}`}
                 onClick={() => onUrgeRatingChange(option.value)}
                 role="radio"
                 type="button"
@@ -95,7 +91,7 @@ export function ResultScreen({
               <button
                 key={option.value}
                 aria-checked={stillWantsToBuy === option.value}
-                className={`min-h-12 rounded-2xl border px-2 text-sm font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ghost-teal ${stillWantsToBuy === option.value ? 'border-ghost-coral bg-ghost-coral text-white' : 'border-ghost-line bg-ghost-mist text-ghost-ink hover:border-ghost-mintStrong'}`}
+                className={`min-h-12 rounded-lg border px-2 text-sm font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ghost-teal ${stillWantsToBuy === option.value ? 'border-ghost-coral bg-ghost-coral text-white' : 'border-ghost-line bg-ghost-mist text-ghost-ink hover:border-ghost-mintStrong'}`}
                 onClick={() => onStillWantsChange(option.value)}
                 role="radio"
                 type="button"
@@ -110,7 +106,7 @@ export function ResultScreen({
           {saved ? 'Carrito fantasma guardado' : 'Guardar carrito fantasma'}
         </Button>
         {notice && (
-          <p aria-live="polite" className="mt-3 rounded-2xl bg-ghost-mint/70 p-3 text-center text-sm font-semibold leading-5 text-ghost-teal">{notice}</p>
+          <p aria-live="polite" className="mt-3 rounded-lg bg-ghost-mint p-3 text-center text-sm font-semibold leading-5 text-ghost-teal">{notice}</p>
         )}
       </div>
 
