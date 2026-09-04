@@ -1,4 +1,5 @@
 import { Button } from '../components/Button'
+import { FeedbackLink } from '../components/FeedbackLink'
 import { SimulationBadge } from '../components/SimulationBadge'
 import { formatPen } from '../lib/money'
 import type { StillWantsToBuy } from '../types/history'
@@ -16,6 +17,7 @@ type ResultScreenProps = {
   onSave: () => void
   onNew: () => void
   onShare: () => void
+  onHistory: () => void
 }
 
 const urgeOptions: Array<{ value: UrgeRating; label: string }> = [
@@ -43,6 +45,7 @@ export function ResultScreen({
   onSave,
   onNew,
   onShare,
+  onHistory,
 }: ResultScreenProps) {
   return (
     <section className="mx-auto max-w-xl space-y-6 py-4 sm:py-10">
@@ -111,14 +114,20 @@ export function ResultScreen({
         )}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className={`grid gap-3 ${saved ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
         <Button onClick={onNew} variant="secondary">
           Simular otro impulso
         </Button>
         <Button onClick={onShare} variant="secondary">
           Compartir
         </Button>
+        {saved && (
+          <Button onClick={onHistory} variant="secondary">
+            Ver historial
+          </Button>
+        )}
       </div>
+      <FeedbackLink className="mx-auto" />
     </section>
   )
 }

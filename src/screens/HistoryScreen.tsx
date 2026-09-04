@@ -1,4 +1,5 @@
 import { Button } from '../components/Button'
+import { FeedbackLink } from '../components/FeedbackLink'
 import { ProductCard } from '../components/ProductCard'
 import { SimulationBadge } from '../components/SimulationBadge'
 import { productCategoryLabels } from '../data'
@@ -166,6 +167,7 @@ export function HistoryScreen({
           </div>
         </section>
       )}
+      <FeedbackLink className="mx-auto" />
     </section>
   )
 }

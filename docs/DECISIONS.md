@@ -132,6 +132,45 @@ Estados: `Aceptada`, `Propuesta`, `En prueba`, `Reemplazada` o `Descartada`.
 - **Consecuencias:** se debe versionar `CACHE_NAME` cuando cambie la estrategia de caché, probar instalación en Chrome/Safari y recordar que el offline completo de assets hashados no es un requisito de este MVP.
 - **Reemplaza o depende de:** D-001 y D-003.
 
+### D-016 — Un carrito pertenece a una sola tienda y modo
+
+- **Fecha:** 2026-09-04
+- **Estado:** Aceptada
+- **Decisión:** mantener un único contexto de tienda/modo por carrito. Si la persona intenta cambiarlo con artículos activos, mostrar una confirmación simple: vaciar y continuar o cancelar para conservar el carrito.
+- **Razón:** evita snapshots incoherentes y hace explícita una decisión que antes podía ocurrir silenciosamente.
+- **Alternativas consideradas:** mezclar líneas con un selector de envío; descartado por complejidad y por parecer una compra real.
+- **Consecuencias:** el guardia se aplica al selector de modo, selector de tienda, recomendaciones y alta de productos; no hay modal propio ni backend.
+- **Reemplaza o depende de:** D-002, D-004 y D-014.
+
+### D-017 — Tarjetas de modo de Home son accesos directos
+
+- **Fecha:** 2026-09-04
+- **Estado:** Aceptada
+- **Decisión:** “Comprar algo” y “Pedir comida” son botones accesibles que llevan directamente al selector de tienda del modo elegido.
+- **Razón:** una tarjeta que parece accionable debe responder; reducir un paso facilita la prueba en móvil.
+- **Alternativas consideradas:** cambiar el estilo a tarjetas informativas; descartado porque el contenido ya funciona como selector natural.
+- **Consecuencias:** el CTA “Soltar un impulso” conserva el selector con rating inicial opcional; un acceso directo puede omitir el rating sin bloquear el ritual.
+- **Reemplaza o depende de:** D-007 y D-008.
+
+### D-018 — Feedback externo opcional y fuera del flujo
+
+- **Fecha:** 2026-09-04
+- **Estado:** Aceptada
+- **Decisión:** mostrar “Dejar feedback” solo cuando `VITE_FEEDBACK_URL` contiene una URL `http(s)` válida; abrirla fuera de la app sin solicitar email ni texto libre dentro del MVP.
+- **Razón:** recoger aprendizaje cualitativo sin backend ni datos personales obligatorios.
+- **Alternativas consideradas:** formulario embebido y endpoint propio; descartados por alcance y privacidad.
+- **Consecuencias:** el enlace aparece en resultado e historial cuando está configurado y permanece oculto por defecto.
+- **Reemplaza o depende de:** D-002, D-005 y D-009.
+
+### D-019 — Suite unitaria mínima con Vitest
+
+- **Fecha:** 2026-09-04
+- **Estado:** Aceptada
+- **Decisión:** añadir Vitest como dependencia de desarrollo y cubrir reglas puras de carrito, historial, recomendaciones y bandas de analytics; no añadir Playwright todavía.
+- **Razón:** proteger cálculos y saneamiento P0/P1 sin sobreconstruir el QA de interfaz.
+- **Consecuencias:** cada cambio debe ejecutar `npm test`, además de lint y build; los recorridos móviles siguen requiriendo QA manual.
+- **Reemplaza o depende de:** D-003 y D-013.
+
 ## Decisiones pendientes
 
 Estas preguntas no bloquean la documentación, pero deben resolverse en el momento indicado:
@@ -143,7 +182,6 @@ Estas preguntas no bloquean la documentación, pero deben resolverse en el momen
 | P-003 | ¿Vercel o Cloudflare Pages? | Antes del primer despliegue |
 | P-004 | ¿Qué rangos usar para `value_band` y duración? | Antes de validar eventos |
 | P-005 | ¿Qué ventana distingue `repeat_session` de una recarga? | Antes del piloto instrumentado |
-| P-006 | ¿Rating inicial en Home o tras elegir modo? | Después de pruebas rápidas de comprensión |
 | P-007 | ¿Duración y control exactos del tracking? | Durante pruebas observadas |
 | P-008 | ¿Cuántas tiendas y productos necesita el primer piloto? | Al finalizar el recorrido FlashMarket |
 | P-009 | ¿Cómo presentar consentimiento de analytics? | Antes de activar el proveedor |

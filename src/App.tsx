@@ -139,6 +139,33 @@ export default function App() {
 
   const showHistory = () => setScreen('history')
 
+  const getActiveCartStore = (): Store | undefined => {
+    const activeStoreId = cart.items[0]?.storeId
+    return activeStoreId ? stores.find((store) => store.id === activeStoreId) : undefined
+  }
+
+  const confirmCartContextChange = (next: { mode: AppMode; storeId?: StoreId }): boolean => {
+    const activeStore = getActiveCartStore()
+    if (!activeStore) return true
+
+    const keepsSameContext = next.storeId
+      ? activeStore.id === next.storeId
+      : activeStore.mode === next.mode
+    if (keepsSameContext) return true
+
+    const targetLabel = next.storeId
+      ? stores.find((store) => store.id === next.storeId)?.name ?? 'otra tienda'
+      : next.mode === 'food' ? 'Pedir comida' : 'Comprar algo'
+    const shouldClear = typeof window === 'undefined' || typeof window.confirm !== 'function'
+      ? true
+      : window.confirm(
+        `Tu carrito actual pertenece a ${activeStore.name}. Para cambiar a ${targetLabel}, debes vaciarlo. ¿Vaciar el carrito y continuar? Si eliges Cancelar, conservamos el carrito actual.`,
+      )
+
+    if (shouldClear) cart.clearCart()
+    return shouldClear
+  }
+
   const showCart = () => {
     setCartNotice(null)
     const cartMode = stores.find((store) => store.id === cart.items[0]?.storeId)?.mode ?? selectedMode ?? 'shopping'
@@ -151,7 +178,7 @@ export default function App() {
     setScreen('cart')
   }
 
-  const pickMode = (mode: AppMode) => {
+  const enterMode = (mode: AppMode) => {
     if (initialUrgeRating && !initialUrgeRatingTracked.current) {
       trackEvent('urge_rating_submitted', {
         moment: 'before',
@@ -170,7 +197,19 @@ export default function App() {
     setScreen('stores')
   }
 
+  const pickMode = (mode: AppMode) => {
+    if (!confirmCartContextChange({ mode })) return
+    enterMode(mode)
+  }
+
+  const selectModeFromHome = (mode: AppMode) => {
+    if (!confirmCartContextChange({ mode })) return
+    startFlow()
+    enterMode(mode)
+  }
+
   const pickStore = (store: Store) => {
+    if (!confirmCartContextChange({ mode: store.mode, storeId: store.id })) return
     trackEvent('store_selected', {
       mode: store.mode,
       session_id: analyticsSessionId.current,
@@ -202,6 +241,7 @@ export default function App() {
   const openRecommendation = (product: Product) => {
     const recommendationStore = stores.find((store) => store.id === product.storeId)
     if (!recommendationStore) return
+    if (!confirmCartContextChange({ mode: recommendationStore.mode, storeId: recommendationStore.id })) return
     trackEvent('product_viewed', {
       category: product.category,
       price_band: getValueBand(product.priceInCents),
@@ -247,22 +287,30 @@ export default function App() {
 
   const handleAddToCart = (product: Product) => {
     const cartStoreId = cart.items[0]?.storeId
-    if (cartStoreId && cartStoreId !== product.storeId) {
+    const switchingStore = Boolean(cartStoreId && cartStoreId !== product.storeId)
+    if (switchingStore && !confirmCartContextChange({ mode: product.mode, storeId: product.storeId })) {
       const cartStoreName = stores.find((store) => store.id === cartStoreId)?.name ?? 'otra tienda'
-      setDetailNotice(`Tu carrito ya pertenece a ${cartStoreName}. Vacíalo antes de agregar productos de otra tienda.`)
+      setDetailNotice(`Conservamos tu carrito de ${cartStoreName}. Puedes vaciarlo si quieres cambiar de tienda.`)
       return
     }
-    const existingItem = cart.items.find((item) => item.productId === product.id)
-    const canAdd = (existingItem?.quantity ?? 0) < MAX_CART_ITEM_QUANTITY && cart.itemCount < MAX_CART_TOTAL_ITEMS
-    if (canAdd) {
-      trackEvent('item_added', {
-        cart_value_band: getValueBand(cart.subtotal + product.priceInCents),
-        category: product.category,
-        product_id: product.id,
-        quantity: (existingItem?.quantity ?? 0) + 1,
-        session_id: analyticsSessionId.current,
-      })
+    const activeItems = switchingStore ? [] : cart.items
+    const existingItem = activeItems.find((item) => item.productId === product.id)
+    const activeItemCount = switchingStore ? 0 : cart.itemCount
+    const canAdd = (existingItem?.quantity ?? 0) < MAX_CART_ITEM_QUANTITY && activeItemCount < MAX_CART_TOTAL_ITEMS
+    if (!canAdd) {
+      setDetailNotice(existingItem && existingItem.quantity >= MAX_CART_ITEM_QUANTITY
+        ? 'Este producto ya llegó al máximo de 20 unidades.'
+        : 'Tu carrito ya llegó al máximo de 99 unidades.')
+      return
     }
+
+    trackEvent('item_added', {
+      cart_value_band: getValueBand((switchingStore ? 0 : cart.subtotal) + product.priceInCents),
+      category: product.category,
+      product_id: product.id,
+      quantity: (existingItem?.quantity ?? 0) + 1,
+      session_id: analyticsSessionId.current,
+    })
     cart.addItem(product)
     setDetailNotice('Agregado al carrito fantasma. Puedes seguir imaginando sin pagar nada.')
   }
@@ -475,7 +523,7 @@ export default function App() {
   }
 
   const content = (() => {
-    if (screen === 'home') return <HomeScreen onHistory={showHistory} onStart={startFlow} />
+    if (screen === 'home') return <HomeScreen onHistory={showHistory} onSelectMode={selectModeFromHome} onStart={startFlow} />
     if (screen === 'history') {
       return (
         <HistoryScreen
@@ -539,6 +587,7 @@ export default function App() {
           onNew={simulateAnother}
           onSave={saveResult}
           onShare={shareResult}
+          onHistory={showHistory}
           onStillWantsChange={setStillWantsToBuy}
           onUrgeRatingChange={recordUrgeRating}
           saved={resultSaved}
@@ -566,7 +615,7 @@ export default function App() {
       )
     }
 
-    return <HomeScreen onHistory={showHistory} onStart={startFlow} />
+    return <HomeScreen onHistory={showHistory} onSelectMode={selectModeFromHome} onStart={startFlow} />
   })()
 
   const ritualScreen = screen === 'checkout' || screen === 'tracking' || screen === 'result'

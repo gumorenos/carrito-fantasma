@@ -114,22 +114,22 @@ La decisión está documentada en [MOCKUP_REVIEW.md](docs/MOCKUP_REVIEW.md). No 
 
 La arquitectura detallada, los límites de dependencias y el plan de siete días están en [TECHNICAL_PLAN.md](docs/TECHNICAL_PLAN.md).
 
-## Estructura esperada cuando empiece la implementación
+## Estructura actual
 
 ```text
 src/
-  app/                 composición, providers y navegación
-  components/          componentes reutilizables
-  features/            catálogo, carrito, checkout, tracking, resultado e historial
-  data/                tiendas y productos ficticios
-  domain/              modelos, cálculos y reglas puras
-  lib/                 storage y analytics
-  pages/               pantallas del recorrido
+  App.tsx              composición y navegación por estado
+  components/          shell, cards, botones y enlaces opcionales
+  data/                tiendas, productos y categorías ficticias
+  hooks/               estado React de carrito e historial
+  lib/                 cálculos, persistencia, analytics, feedback y tests unitarios
+  screens/             pantallas del recorrido
+  types/               modelos de dominio y navegación
 public/                iconos PWA e imágenes propias
 docs/                  contexto, alcance, UX, QA y handoff
 ```
 
-Esta estructura es una guía, no una razón para crear carpetas vacías o abstracciones anticipadas.
+Esta estructura es deliberadamente pequeña. No crear capas vacías ni abstraer antes de que una prueba del MVP lo justifique.
 
 ## Stack previsto
 
@@ -138,6 +138,7 @@ Esta estructura es una guía, no una razón para crear carpetas vacías o abstra
 - Datos locales en TypeScript o JSON.
 - Estado simple de React y persistencia en `localStorage`.
 - PWA básica.
+- Vitest para reglas puras y saneamiento; no hay Playwright todavía.
 - Capa centralizada de analytics, con PostHog u otra solución simple detrás de un adaptador.
 - Vercel o Cloudflare Pages.
 - Tally o Google Forms para feedback cualitativo opcional.
@@ -159,6 +160,7 @@ Comandos disponibles:
 - `npm run build` — typecheck y build de producción.
 - `npm run preview` — sirve el build localmente.
 - `npm run lint` — revisión estática con ESLint.
+- `npm test` — ejecuta los tests unitarios mínimos con Vitest.
 
 El build genera `dist/`, que está excluido de Git.
 
@@ -175,6 +177,14 @@ cp .env.example .env.local
 Después completa `VITE_POSTHOG_KEY` en `.env.local`. `VITE_POSTHOG_HOST` usa por defecto `https://us.i.posthog.com`; cambia el valor solo si tu proyecto de PostHog utiliza otro host. Nunca incluyas secretos privados en variables `VITE_`, commits ni capturas.
 
 La integración usa únicamente los eventos aprobados en [PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md), con IDs técnicos, modos, categorías y bandas de valor. No envía nombres de productos, texto libre, emails, teléfonos, DNI, direcciones ni URLs sensibles. PostHog se inicializa con autocaptura, pageviews y session replay desactivados, y con persistencia en memoria.
+
+### Feedback cualitativo opcional
+
+El MVP puede mostrar un enlace externo de feedback en el resultado y el historial. Configúralo en `.env.local` con `VITE_FEEDBACK_URL` (por ejemplo, la URL pública de Tally o Google Forms). Si la variable está vacía, ausente o no usa `http(s)`, el enlace permanece oculto. La app nunca solicita email ni texto libre dentro del flujo.
+
+```bash
+VITE_FEEDBACK_URL=https://tu-formulario.example/feedback
+```
 
 ## PWA y despliegue estático
 
@@ -218,6 +228,7 @@ No se añadió configuración de Next.js, SSR ni una regla de backend. Si en el 
 - [Notas de UX y contenido](docs/UX_NOTES.md)
 - [Instrucciones para futuros agentes](docs/AGENT_HANDOFF.md)
 - [Checklist manual de QA](docs/QA_CHECKLIST.md)
+- [Informe QA de seguimiento](docs/QA_REPORT.md)
 - [Registro de decisiones](docs/DECISIONS.md)
 - [Qué no construir todavía](docs/DO_NOT_BUILD_YET.md)
 - [Revisión de mockups](docs/MOCKUP_REVIEW.md)

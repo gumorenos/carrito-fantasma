@@ -6,9 +6,10 @@ import type { AppMode } from '../types/product'
 type HomeScreenProps = {
   onStart: () => void
   onHistory: () => void
+  onSelectMode: (mode: AppMode) => void
 }
 
-export function HomeScreen({ onStart, onHistory }: HomeScreenProps) {
+export function HomeScreen({ onStart, onHistory, onSelectMode }: HomeScreenProps) {
   return (
     <div className="space-y-8 pb-4">
       <section className="relative overflow-hidden rounded-[2rem] border border-ghost-line bg-white px-5 py-8 shadow-soft sm:px-10 sm:py-12">
@@ -48,12 +49,14 @@ export function HomeScreen({ onStart, onHistory }: HomeScreenProps) {
             description="Gadgets, decoración y esas cosas que aparecen de pronto en tu wishlist."
             icon="✦"
             mode={'shopping' satisfies AppMode}
+            onClick={() => onSelectMode('shopping')}
             title="Comprar algo"
           />
           <ModeCard
             description="Hamburguesas, sushi, postres y antojos que pueden esperar un poquito."
             icon="◉"
             mode={'food' satisfies AppMode}
+            onClick={() => onSelectMode('food')}
             title="Pedir comida"
           />
         </div>

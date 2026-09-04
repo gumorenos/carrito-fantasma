@@ -1,4 +1,3 @@
-import { Button } from '../components/Button'
 import { ModeCard } from '../components/ModeCard'
 import { SimulationBadge } from '../components/SimulationBadge'
 import type { AppMode, UrgeRating } from '../types/product'
@@ -7,7 +6,7 @@ type ModeSelectorScreenProps = {
   initialUrgeRating: UrgeRating | null
   onBack: () => void
   onPick: (mode: AppMode) => void
-  onUrgeRatingChange: (rating: UrgeRating) => void
+  onUrgeRatingChange: (rating: UrgeRating | null) => void
 }
 
 const urgeOptions: UrgeRating[] = [1, 2, 3, 4, 5]
@@ -46,6 +45,15 @@ export function ModeSelectorScreen({ initialUrgeRating, onBack, onPick, onUrgeRa
           <span>Leve</span>
           <span>Muy fuerte</span>
         </div>
+        <div className="mt-3 text-center">
+          {initialUrgeRating === null ? (
+            <p className="text-xs leading-5 text-ghost-muted">Puedes elegir un modo sin responder esta pregunta.</p>
+          ) : (
+            <button className="inline-flex min-h-11 items-center px-3 text-xs font-bold text-ghost-teal hover:underline" onClick={() => onUrgeRatingChange(null)} type="button">
+              Omitir esta pregunta
+            </button>
+          )}
+        </div>
       </fieldset>
       <div className="space-y-3">
         <ModeCard
@@ -63,9 +71,6 @@ export function ModeSelectorScreen({ initialUrgeRating, onBack, onPick, onUrgeRa
           title="Pedir comida"
         />
       </div>
-      <Button className="w-full" onClick={onBack} variant="secondary">
-        Ahora no
-      </Button>
     </section>
   )
 }

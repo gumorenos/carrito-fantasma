@@ -15,7 +15,7 @@ Al terminar una sesión, la persona debe sentir que completó una decisión y co
 - Mostrar nombre, claim y una explicación en una o dos frases.
 - Indicar de forma visible: “Es una simulación. No compras nada de verdad.”
 - Ofrecer los botones “Comprar algo” y “Pedir comida”.
-- Pedir opcionalmente intensidad inicial: “¿Qué tan fuerte está el impulso?” de 1 a 5, con opción “Ahora no”.
+- Pedir opcionalmente intensidad inicial: “¿Qué tan fuerte está el impulso?” de 1 a 5, con opción “Omitir esta pregunta”; seleccionar un modo sin responder también continúa el flujo.
 - El selector de modo debe ser la acción dominante; la medición no puede bloquearlo.
 
 ### 3.2 Selección de tienda y catálogo
@@ -98,6 +98,7 @@ Al terminar una sesión, la persona debe sentir que completó una decisión y co
 - Todos los precios son ficticios, positivos y expresados inicialmente en PEN.
 - El ahorro de una sesión es el total final del carrito en el momento de confirmar.
 - Cambios posteriores al catálogo no alteran sesiones ya guardadas; el historial conserva un snapshot mínimo.
+- Un carrito activo pertenece a una sola tienda y modo. Si la persona intenta cambiar de contexto, debe confirmar si vacía el carrito o conserva el actual; nunca se mezcla en silencio.
 - Una sesión completada se guarda una sola vez, incluso si la pantalla se recarga.
 - Un carrito nuevo comienza vacío y no modifica el registro anterior.
 - La app no debe generar deuda, puntos canjeables, recompensas monetarias ni saldos reales.

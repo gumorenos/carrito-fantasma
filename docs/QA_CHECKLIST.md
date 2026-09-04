@@ -4,6 +4,8 @@
 
 Ejecutar este checklist antes del primer piloto y después de cambios que afecten carrito, checkout, persistencia, analytics o PWA. Registrar dispositivo, navegador, commit, entorno y resultado. No marcar una sección como aprobada por haber probado únicamente escritorio.
 
+Antes de la revisión manual, ejecutar `npm test`, `npm run lint` y `npm run build`; los tests unitarios no sustituyen el recorrido móvil.
+
 ## Matriz mínima
 
 - [ ] Chrome reciente en Android real o emulado, ancho aproximado de 360 px.
