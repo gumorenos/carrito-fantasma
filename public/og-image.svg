@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f1faf7"/>
+  <circle cx="940" cy="130" r="230" fill="#d9f3e9"/>
+  <circle cx="1010" cy="560" r="190" fill="#fff7df"/>
+  <g transform="translate(790 155) scale(2.1)">
+    <rect width="128" height="128" rx="32" fill="#d9f3e9"/>
+    <path d="M32 49c0-15.46 14.33-28 32-28s32 12.54 32 28v31c0 12.7-10.3 23-23 23H55c-12.7 0-23-10.3-23-23V49Z" fill="#16796d"/>
+    <circle cx="53" cy="57" r="5" fill="#f1faf7"/>
+    <circle cx="75" cy="57" r="5" fill="#f1faf7"/>
+    <path d="M49 76c4.7 6 12.3 9 19 9s14.3-3 19-9" fill="none" stroke="#f1faf7" stroke-linecap="round" stroke-width="5"/>
+    <path d="m25 84 9 9m69-9-9 9" stroke="#e97857" stroke-linecap="round" stroke-width="6"/>
+  </g>
+  <text x="100" y="245" fill="#17332f" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800">Carrito Fantasma</text>
+  <text x="104" y="330" fill="#16796d" font-family="Inter, Arial, sans-serif" font-size="38" font-weight="700">Compra de mentira. Plata de verdad contigo.</text>
+  <text x="104" y="430" fill="#607570" font-family="Inter, Arial, sans-serif" font-size="28">Llena el carrito · Haz checkout falso · Quédate con tu plata</text>
+</svg>
