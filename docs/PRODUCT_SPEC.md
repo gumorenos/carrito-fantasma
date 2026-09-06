@@ -1,3 +1,5 @@
+> **Dirección vigente — 2026-09-06:** El usuario autorizó una tienda inmersiva. Ver [plan de implementación](IMMERSIVE_STORE_PLAN.md). Sustituye las reglas anteriores de avisos constantes, emojis como producto, guardado manual y seguimiento simbólico. Aclaración inicial y junto a Confirmar pedido; sin cobro, envío ni datos de pago. Los apartados de implementación previos describen la versión anterior.
+
 # Especificación de producto
 
 ## 1. Propósito
@@ -22,9 +24,9 @@ Al terminar una sesión, la persona debe sentir que completó una decisión y co
 
 - E-commerce muestra una o varias tiendas ficticias; FlashMarket puede ser la opción inicial.
 - Delivery usa AntojoGo y puede agrupar comida por restaurantes o categorías ficticias sin crear un modelo complejo.
-- Cada tarjeta presenta nombre inventado, imagen propia o placeholder, precio ficticio y categoría.
+- Cada tarjeta presenta nombre descriptivo, fotografía correspondiente, precio de escenario y categoría. No usar placeholders como catálogo principal.
 - El catálogo debe ser finito y local. No se consultan precios, stock ni imágenes de comercios reales.
-- La interfaz recuerda constantemente el contexto ficticio mediante microcopy discreto, sin repetir advertencias alarmantes.
+- La explicación se muestra al entrar por primera vez y al confirmar el pedido. El browsing usa lenguaje comercial sin recordatorios constantes.
 
 ### 3.3 Detalle
 

@@ -1,4 +1,8 @@
-import type { FoodCategory, ProductCategory, ShoppingCategory } from '../types/product'
+import type {
+  FoodCategory,
+  ProductCategory,
+  ShoppingCategory,
+} from '../types/product'
 
 export const shoppingCategories = [
   'gadgets',
@@ -12,6 +16,10 @@ export const shoppingCategories = [
 ] as const satisfies readonly ShoppingCategory[]
 
 export const foodCategories = [
+  'pizzas',
+  'pastas',
+  'ensaladas',
+  'platos',
   'hamburguesas',
   'pollo',
   'sushi',
@@ -29,6 +37,10 @@ export const productCategoryLabels: Record<ProductCategory, string> = {
   belleza: 'Belleza',
   viral: 'Viral',
   fomo: 'FOMO',
+  pizzas: 'Pizzas',
+  pastas: 'Pastas',
+  ensaladas: 'Ensaladas',
+  platos: 'Platos',
   hamburguesas: 'Hamburguesas',
   pollo: 'Pollo',
   sushi: 'Sushi',

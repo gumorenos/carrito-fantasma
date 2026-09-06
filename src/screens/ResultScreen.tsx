@@ -1,129 +1,178 @@
+import { useState } from 'react'
 import { Button } from '../components/Button'
-import { FeedbackLink } from '../components/FeedbackLink'
 import { formatPen } from '../lib/money'
-import type { StillWantsToBuy } from '../types/history'
+import type { GhostCartHistoryEntry, StillWantsToBuy } from '../types/history'
 import type { UrgeRating } from '../types/product'
-import type { RitualSnapshot } from '../types/ritual'
-
-type ResultScreenProps = {
-  snapshot: RitualSnapshot
-  urgeRating: UrgeRating | null
-  stillWantsToBuy: StillWantsToBuy | null
-  saved: boolean
-  notice?: string | null
-  onUrgeRatingChange: (rating: UrgeRating) => void
-  onStillWantsChange: (value: StillWantsToBuy) => void
-  onSave: () => void
-  onNew: () => void
-  onShare: () => void
+type Props = {
+  order: GhostCartHistoryEntry
+  storageAvailable: boolean
   onHistory: () => void
+  onNew: () => void
+  onRetry: () => void
+  onFeedback: (rating?: UrgeRating, wants?: StillWantsToBuy) => void
 }
-
-const urgeOptions: Array<{ value: UrgeRating; label: string }> = [
-  { value: 1, label: 'Muy leve' },
-  { value: 2, label: 'Leve' },
-  { value: 3, label: 'Medio' },
-  { value: 4, label: 'Fuerte' },
-  { value: 5, label: 'Muy fuerte' },
-]
-
-const wantsOptions: Array<{ value: StillWantsToBuy; label: string }> = [
-  { value: 'yes', label: 'Sí' },
-  { value: 'no', label: 'No' },
-  { value: 'maybe', label: 'Tal vez' },
-]
-
 export function ResultScreen({
-  snapshot,
-  urgeRating,
-  stillWantsToBuy,
-  saved,
-  notice,
-  onUrgeRatingChange,
-  onStillWantsChange,
-  onSave,
-  onNew,
-  onShare,
+  order,
+  storageAvailable,
   onHistory,
-}: ResultScreenProps) {
+  onNew,
+  onFeedback,
+  onRetry,
+}: Props) {
+  const [shareNotice, setShareNotice] = useState('')
+  async function share() {
+    const text = `Mi selección en ${order.storeName}: ${formatPen(order.subtotalAvoidedInCents)}. Carrito Fantasma, sin cobro ni envío.`
+    try {
+      if (navigator.share)
+        await navigator.share({ title: 'Mi selección', text })
+      else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text)
+        setShareNotice('Selección copiada.')
+      } else setShareNotice('Compartir no está disponible en este navegador.')
+    } catch {
+      setShareNotice('No se compartió la selección.')
+    }
+  }
   return (
-    <section className="mx-auto max-w-xl space-y-5 py-2 sm:py-8">
-      <div className="rounded-3xl border border-ghost-mintStrong bg-white p-6 text-center shadow-soft sm:p-10">
-        <div aria-hidden="true" className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-ghost-mint text-3xl text-ghost-teal">✧</div>
-        <p className="mt-5 text-xs font-black uppercase tracking-[0.16em] text-ghost-teal">Ritual completado</p>
-        <h1 className="mt-3 text-4xl font-black leading-tight tracking-[-0.05em] text-ghost-ink sm:text-5xl">No gastaste {formatPen(snapshot.subtotalInCents)}</h1>
-        <p className="mt-4 text-lg font-bold text-ghost-teal">El carrito se fue. Tu plata no.</p>
-        <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-ghost-muted">Es una estimación del carrito ficticio, no un saldo bancario. Te diste tiempo antes de decidir.</p>
-      </div>
-
-      <div className="rounded-2xl border border-ghost-line bg-white p-4 shadow-card sm:p-6">
-        <div>
-          <h2 className="text-xl font-black tracking-tight text-ghost-ink">Una pregunta rápida</h2>
-          <p className="mt-1 text-sm leading-6 text-ghost-muted">Tu respuesta es opcional. No pedimos texto libre ni datos personales.</p>
+    <section className="mx-auto max-w-xl space-y-5 py-6">
+      <div className="rounded-2xl border border-ghost-line bg-white p-6 sm:p-9">
+        <div
+          aria-hidden="true"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-ghost-mint text-2xl text-ghost-teal"
+        >
+          ✓
         </div>
-
-        <fieldset className="mt-6">
-          <legend className="text-sm font-black text-ghost-ink">¿Qué tan fuerte está el impulso ahora?</legend>
-          {snapshot.initialUrgeRating && (
-            <p className="mt-1 text-xs leading-5 text-ghost-muted">Al comenzar marcaste {snapshot.initialUrgeRating}/5.</p>
+        <p className="mt-5 text-sm text-ghost-muted">
+          {order.storeName} · Pedido #{order.id.slice(0, 8).toUpperCase()}
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+          Pedido confirmado
+        </h1>
+        <p className="mt-3 text-ghost-muted">
+          Tu selección está en Mis pedidos.
+        </p>
+        <div className="mt-6 divide-y divide-ghost-line border-y border-ghost-line">
+          {order.items.map((item) => (
+            <div className="flex items-center gap-3 py-3" key={item.productId}>
+              <img
+                src={item.imageUrl}
+                alt=""
+                className="h-14 w-14 rounded-lg object-contain"
+              />
+              <span className="flex-1 text-sm">
+                {item.name}
+                <span className="mt-1 block text-ghost-muted">
+                  Cantidad: {item.quantity}
+                </span>
+              </span>
+              <span className="text-sm font-semibold">
+                {formatPen(item.quantity * item.unitPriceInCents)}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 flex justify-between text-xl font-bold">
+          <span>Total</span>
+          <span>{formatPen(order.subtotalAvoidedInCents)}</span>
+        </div>
+        {!storageAvailable && (
+          <p role="alert" className="mt-4 rounded-lg bg-amber-50 p-3 text-sm">
+            No se pudo guardar en este dispositivo. El pedido sigue disponible
+            en esta pestaña; no la cierres si quieres conservarlo.{' '}
+            <button
+              type="button"
+              onClick={onRetry}
+              className="mt-2 block min-h-11 underline"
+            >
+              Reintentar guardado
+            </button>
+          </p>
+        )}
+        <Button className="mt-6 w-full" onClick={onHistory}>
+          Ver mis pedidos
+        </Button>
+        <button
+          type="button"
+          onClick={onNew}
+          className="mt-2 min-h-11 w-full text-sm font-semibold"
+        >
+          Volver a la tienda
+        </button>
+        <button
+          type="button"
+          onClick={share}
+          className="min-h-11 w-full text-sm text-ghost-muted underline"
+        >
+          Compartir selección
+        </button>
+        {shareNotice && (
+          <p role="status" className="mt-2 text-sm">
+            {shareNotice}
+          </p>
+        )}
+      </div>
+      <details className="rounded-xl border border-ghost-line bg-white p-5">
+        <summary className="cursor-pointer text-base font-semibold">
+          ¿Cómo te sientes ahora?{' '}
+          <span className="text-sm font-normal text-ghost-muted">Opcional</span>
+        </summary>
+        <p className="mt-4 text-sm leading-6 text-ghost-muted">
+          No hubo cobro ni envío. Puedes registrar si esta pausa cambió tus
+          ganas de comprar.
+        </p>
+        <fieldset className="mt-5">
+          <legend className="text-sm font-semibold">
+            Intensidad del impulso
+          </legend>
+          {order.initialUrgeRating && (
+            <p className="mt-2 text-sm">
+              Al comenzar: {order.initialUrgeRating}/5
+            </p>
           )}
-          <div className="mt-3 grid grid-cols-5 gap-1" role="radiogroup" aria-label="Intensidad final del impulso">
-            {urgeOptions.map((option) => (
+          <div className="mt-3 grid grid-cols-5 gap-2">
+            {([1, 2, 3, 4, 5] as UrgeRating[]).map((rating) => (
               <button
-                key={option.value}
-                aria-checked={urgeRating === option.value}
-                className={`flex min-h-16 flex-col items-center justify-center rounded-lg border px-1 text-center transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ghost-teal ${urgeRating === option.value ? 'border-ghost-teal bg-ghost-teal text-white' : 'border-ghost-line bg-ghost-mist text-ghost-ink hover:border-ghost-mintStrong'}`}
-                onClick={() => onUrgeRatingChange(option.value)}
-                role="radio"
+                key={rating}
                 type="button"
+                aria-label={`${rating} de 5`}
+                aria-pressed={order.urgeRating === rating}
+                onClick={() => onFeedback(rating, order.stillWantsToBuy)}
+                className={`min-h-11 rounded-lg border ${order.urgeRating === rating ? 'bg-ghost-plum text-white' : 'border-ghost-line'}`}
               >
-                <span className="text-lg font-black">{option.value}</span>
-                <span className="mt-0.5 text-[10px] font-bold leading-3">{option.label}</span>
+                {rating}
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-ghost-muted">
+            1 Muy leve · 5 Muy fuerte
+          </p>
+        </fieldset>
+        <fieldset className="mt-5">
+          <legend className="text-sm font-semibold">
+            ¿Todavía quieres comprarlo?
+          </legend>
+          <div className="mt-3 flex gap-2">
+            {(['yes', 'no', 'maybe'] as StillWantsToBuy[]).map((value) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={order.stillWantsToBuy === value}
+                onClick={() => onFeedback(order.urgeRating, value)}
+                className={`min-h-11 flex-1 rounded-lg border text-sm ${order.stillWantsToBuy === value ? 'bg-ghost-plum text-white' : 'border-ghost-line'}`}
+              >
+                {value === 'yes' ? 'Sí' : value === 'no' ? 'No' : 'Tal vez'}
               </button>
             ))}
           </div>
         </fieldset>
-
-        <fieldset className="mt-7">
-          <legend className="text-sm font-black text-ghost-ink">¿Igual quieres comprarlo o pedirlo?</legend>
-          <div className="mt-3 grid grid-cols-3 gap-2" role="radiogroup" aria-label="Si todavía quieres comprarlo">
-            {wantsOptions.map((option) => (
-              <button
-                key={option.value}
-                aria-checked={stillWantsToBuy === option.value}
-                className={`min-h-12 rounded-lg border px-2 text-sm font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ghost-teal ${stillWantsToBuy === option.value ? 'border-ghost-coral bg-ghost-coral text-white' : 'border-ghost-line bg-ghost-mist text-ghost-ink hover:border-ghost-mintStrong'}`}
-                onClick={() => onStillWantsChange(option.value)}
-                role="radio"
-                type="button"
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </fieldset>
-
-        <Button className="mt-8 w-full" disabled={saved} onClick={onSave}>
-          {saved ? 'Carrito fantasma guardado' : 'Guardar carrito fantasma'}
-        </Button>
-        {notice && (
-          <p aria-live="polite" className="mt-3 rounded-lg bg-ghost-mint p-3 text-center text-sm font-semibold leading-5 text-ghost-teal">{notice}</p>
-        )}
-      </div>
-
-      <div className={`grid gap-3 ${saved ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
-        <Button onClick={onNew} variant="secondary">
-          Simular otro impulso
-        </Button>
-        <Button onClick={onShare} variant="secondary">
-          Compartir
-        </Button>
-        {saved && (
-          <Button onClick={onHistory} variant="secondary">
-            Ver historial
-          </Button>
-        )}
-      </div>
-      <FeedbackLink className="mx-auto" />
+        <p className="mt-3 text-xs text-ghost-muted" role="status">
+          {order.urgeRating || order.stillWantsToBuy
+            ? storageAvailable
+              ? 'Respuesta guardada.'
+              : 'Respuesta disponible solo en esta pestaña.'
+            : 'Puedes omitir estas preguntas.'}
+        </p>
+      </details>
     </section>
   )
 }

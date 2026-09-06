@@ -1,7 +1,13 @@
 import { sanitizeCart } from './cart'
 import { getHistoryStorageKey } from './storage'
 import type { GhostCartHistoryEntry, StillWantsToBuy } from '../types/history'
-import type { AppMode, Product, ProductCategory, StoreId, UrgeRating } from '../types/product'
+import type {
+  AppMode,
+  Product,
+  ProductCategory,
+  StoreId,
+  UrgeRating,
+} from '../types/product'
 
 export const MAX_HISTORY_ENTRIES = 100
 
@@ -21,6 +27,10 @@ const validCategories = new Set<ProductCategory>([
   'belleza',
   'viral',
   'fomo',
+  'pizzas',
+  'pastas',
+  'ensaladas',
+  'platos',
   'hamburguesas',
   'pollo',
   'sushi',
@@ -58,16 +68,25 @@ function sanitizeEntry(value: unknown): GhostCartHistoryEntry | null {
   }
 
   const items = sanitizeCart(value.items)
-  const categories = value.categories.filter((category): category is ProductCategory =>
-    typeof category === 'string' && validCategories.has(category as ProductCategory),
+  const categories = value.categories.filter(
+    (category): category is ProductCategory =>
+      typeof category === 'string' &&
+      validCategories.has(category as ProductCategory),
   )
-  const urgeRating = value.urgeRating === undefined || isUrgeRating(value.urgeRating) ? value.urgeRating : undefined
-  const initialUrgeRating = value.initialUrgeRating === undefined || isUrgeRating(value.initialUrgeRating)
-    ? value.initialUrgeRating
-    : undefined
-  const stillWantsToBuy = value.stillWantsToBuy === undefined || validStillWants.has(value.stillWantsToBuy as StillWantsToBuy)
-    ? value.stillWantsToBuy as StillWantsToBuy | undefined
-    : undefined
+  const urgeRating =
+    value.urgeRating === undefined || isUrgeRating(value.urgeRating)
+      ? value.urgeRating
+      : undefined
+  const initialUrgeRating =
+    value.initialUrgeRating === undefined ||
+    isUrgeRating(value.initialUrgeRating)
+      ? value.initialUrgeRating
+      : undefined
+  const stillWantsToBuy =
+    value.stillWantsToBuy === undefined ||
+    validStillWants.has(value.stillWantsToBuy as StillWantsToBuy)
+      ? (value.stillWantsToBuy as StillWantsToBuy | undefined)
+      : undefined
 
   return {
     id: value.id,
@@ -116,10 +135,15 @@ export function getHistory(): GhostCartHistoryEntry[] {
   return readPersistedHistory()
 }
 
-export function writePersistedHistory(entries: readonly GhostCartHistoryEntry[]): boolean {
+export function writePersistedHistory(
+  entries: readonly GhostCartHistoryEntry[],
+): boolean {
   try {
     if (typeof window === 'undefined') return false
-    window.localStorage.setItem(getHistoryStorageKey(), JSON.stringify(entries.slice(0, MAX_HISTORY_ENTRIES)))
+    window.localStorage.setItem(
+      getHistoryStorageKey(),
+      JSON.stringify(entries.slice(0, MAX_HISTORY_ENTRIES)),
+    )
     return true
   } catch {
     return false
@@ -142,16 +166,27 @@ export function clearHistory(): boolean {
   }
 }
 
-export function getTotalSaved(history: readonly GhostCartHistoryEntry[] = getHistory()): number {
-  return history.reduce((total, entry) => total + entry.subtotalAvoidedInCents, 0)
+export function getTotalSaved(
+  history: readonly GhostCartHistoryEntry[] = getHistory(),
+): number {
+  return history.reduce(
+    (total, entry) => total + entry.subtotalAvoidedInCents,
+    0,
+  )
 }
 
-export function getFrequentCategories(history: readonly GhostCartHistoryEntry[] = getHistory()): ProductCategory[] {
+export function getFrequentCategories(
+  history: readonly GhostCartHistoryEntry[] = getHistory(),
+): ProductCategory[] {
   const counts = new Map<ProductCategory, number>()
 
   for (const entry of history) {
-    const categories = entry.categories.length > 0 ? entry.categories : entry.items.map((item) => item.category)
-    for (const category of categories) counts.set(category, (counts.get(category) ?? 0) + 1)
+    const categories =
+      entry.categories.length > 0
+        ? entry.categories
+        : entry.items.map((item) => item.category)
+    for (const category of categories)
+      counts.set(category, (counts.get(category) ?? 0) + 1)
   }
 
   return [...counts.entries()]
@@ -159,15 +194,22 @@ export function getFrequentCategories(history: readonly GhostCartHistoryEntry[] 
     .map(([category]) => category)
 }
 
-export function getAverageSavedAmount(history: readonly GhostCartHistoryEntry[] = getHistory()): number {
-  return history.length === 0 ? 0 : Math.round(getTotalSaved(history) / history.length)
+export function getAverageSavedAmount(
+  history: readonly GhostCartHistoryEntry[] = getHistory(),
+): number {
+  return history.length === 0
+    ? 0
+    : Math.round(getTotalSaved(history) / history.length)
 }
 
-export function getMostUsedMode(history: readonly GhostCartHistoryEntry[] = getHistory()): AppMode | null {
+export function getMostUsedMode(
+  history: readonly GhostCartHistoryEntry[] = getHistory(),
+): AppMode | null {
   if (history.length === 0) return null
 
   const counts = new Map<AppMode, number>()
-  for (const entry of history) counts.set(entry.mode, (counts.get(entry.mode) ?? 0) + 1)
+  for (const entry of history)
+    counts.set(entry.mode, (counts.get(entry.mode) ?? 0) + 1)
   const shoppingCount = counts.get('shopping') ?? 0
   const foodCount = counts.get('food') ?? 0
   if (shoppingCount === foodCount) return null
@@ -185,14 +227,20 @@ export function getSimpleRecommendations(
   if (history.length === 0) return available.slice(0, 6)
 
   const frequentCategories = getFrequentCategories(history)
-  const categoryRank = new Map(frequentCategories.map((category, index) => [category, frequentCategories.length - index]))
+  const categoryRank = new Map(
+    frequentCategories.map((category, index) => [
+      category,
+      frequentCategories.length - index,
+    ]),
+  )
   const average = getAverageSavedAmount(history)
   const mostUsedMode = getMostUsedMode(history)
 
   const score = (product: Product, index: number) => {
     const categoryScore = (categoryRank.get(product.category) ?? 0) * 100
     const modeScore = product.mode === mostUsedMode ? 20 : 0
-    const distance = average > 0 ? Math.abs(product.priceInCents - average) / average : 1
+    const distance =
+      average > 0 ? Math.abs(product.priceInCents - average) / average : 1
     const ticketScore = Math.max(0, 80 - distance * 80)
     const defaultOrderScore = Math.max(0, 10 - index / 10)
     return categoryScore + modeScore + ticketScore + defaultOrderScore
@@ -211,4 +259,14 @@ export function addHistoryEntry(
 ): GhostCartHistoryEntry[] {
   if (entries.some((existing) => existing.id === entry.id)) return [...entries]
   return [entry, ...entries].slice(0, MAX_HISTORY_ENTRIES)
+}
+
+/** Update feedback on the same order without changing its position or creating duplicates. */
+export function upsertHistoryEntry(
+  entries: readonly GhostCartHistoryEntry[],
+  entry: GhostCartHistoryEntry,
+): GhostCartHistoryEntry[] {
+  return entries.some((value) => value.id === entry.id)
+    ? entries.map((value) => (value.id === entry.id ? entry : value))
+    : [entry, ...entries].slice(0, MAX_HISTORY_ENTRIES)
 }

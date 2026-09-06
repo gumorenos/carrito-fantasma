@@ -1,38 +1,144 @@
+import { useState } from 'react'
 import { Button } from '../components/Button'
 import { ProductVisual } from '../components/ProductVisual'
 import { productCategoryLabels } from '../data'
 import { formatPen } from '../lib/money'
 import type { Product, Store } from '../types/product'
-
-type ProductDetailScreenProps = {
+type Props = {
   product: Product
   store: Store
   onBack: () => void
-  onAddToCart: () => void
+  onAddToCart: (product: Product) => void
+  onCart: () => void
   notice?: string | null
+  favorite: boolean
+  onFavorite: () => void
 }
-
-export function ProductDetailScreen({ product, store, onBack, onAddToCart, notice }: ProductDetailScreenProps) {
+export function ProductDetailScreen({
+  product,
+  store,
+  onBack,
+  onAddToCart,
+  onCart,
+  notice,
+  favorite,
+  onFavorite,
+}: Props) {
+  const [selectedImage, setSelectedImage] = useState(product.imageUrl)
+  const [variant, setVariant] = useState(product.variants?.[0])
+  const images = product.images?.length ? product.images : [product.imageUrl]
+  const configured = variant
+    ? {
+        ...product,
+        id: `${product.id}::${variant.id}`,
+        name: `${product.name} · ${variant.label}`,
+      }
+    : product
   return (
-    <section className="mx-auto max-w-4xl space-y-4 py-1 sm:py-4">
-      <button className="inline-flex min-h-11 items-center text-sm font-black text-ghost-plum hover:text-ghost-plumDark" onClick={onBack} type="button">← Volver al catálogo</button>
-      <article className="overflow-hidden rounded-2xl border border-ghost-line bg-white shadow-market md:grid md:grid-cols-[1.05fr_0.95fr]">
-        <ProductVisual category={product.category} className="aspect-square h-full min-h-[310px] w-full" name={product.name} />
-        <div className="flex flex-col p-5 sm:p-7">
-          <p className="text-xs font-black uppercase tracking-[0.1em] text-ghost-plum">{store.name} · {productCategoryLabels[product.category]}</p>
-          <h1 className="mt-2 text-3xl font-black leading-[1.08] tracking-[-0.04em] text-ghost-ink sm:text-4xl">{product.name}</h1>
-          <p className="mt-3 text-sm leading-6 text-ghost-muted sm:text-base">{product.description}</p>
-          <div className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold text-ghost-muted" aria-label="Características del producto">
-            {product.tags.map((tag) => <span key={tag}>#{tag}</span>)}
-          </div>
-          <div className="mt-6 border-y border-ghost-line py-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-ghost-muted">Precio imaginario</p>
-            <p className="mt-1 text-3xl font-black tracking-tight text-ghost-ink">{formatPen(product.priceInCents)}</p>
-          </div>
-          <div className="mt-auto pt-5">
-            <Button className="w-full" onClick={onAddToCart}>Agregar al carrito fantasma</Button>
-            <p className="mt-2 text-center text-[11px] font-semibold leading-4 text-ghost-muted">Simulación sin cobro, pago ni envío.</p>
-            {notice && <p aria-live="polite" className="mt-3 rounded-lg bg-ghost-mint p-3 text-center text-sm font-semibold leading-5 text-ghost-teal">{notice}</p>}
+    <section className="space-y-5">
+      <button
+        type="button"
+        onClick={onBack}
+        className="min-h-11 text-sm text-ghost-muted"
+      >
+        ← {store.name} / {productCategoryLabels[product.category]}
+      </button>
+      <article className="grid gap-6 rounded-xl border border-ghost-line bg-white p-4 sm:p-7 md:grid-cols-2 lg:gap-10">
+        <div>
+          <ProductVisual
+            imageUrl={selectedImage}
+            category={product.category}
+            name={product.name}
+            className="aspect-square w-full rounded-lg"
+          />
+          {images.length > 1 && (
+            <div className="mt-3 flex gap-2">
+              {images.map((url, index) => (
+                <button
+                  key={url}
+                  type="button"
+                  aria-label={`Ver imagen ${index + 1}`}
+                  aria-pressed={url === selectedImage}
+                  onClick={() => setSelectedImage(url)}
+                  className={`h-20 w-20 overflow-hidden rounded-lg border-2 ${url === selectedImage ? 'border-ghost-plum' : 'border-ghost-line'}`}
+                >
+                  <img
+                    src={url}
+                    alt=""
+                    className="h-full w-full object-contain"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col">
+          <p className="text-sm text-ghost-muted">
+            {productCategoryLabels[product.category]}
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-tight">
+            {product.name}
+          </h1>
+          <p className="mt-4 text-3xl font-bold">
+            {formatPen(product.priceInCents)}
+          </p>
+          <p className="mt-5 text-base leading-7 text-ghost-muted">
+            {product.description}
+          </p>
+          {product.specifications?.length ? (
+            <ul className="mt-5 space-y-2 border-t border-ghost-line pt-5 text-sm">
+              {product.specifications.map((spec) => (
+                <li key={spec}>{spec}</li>
+              ))}
+            </ul>
+          ) : null}
+          {product.variants?.length ? (
+            <fieldset className="mt-6">
+              <legend className="mb-2 text-sm font-semibold">
+                Elige una opción
+              </legend>
+              <div className="flex flex-wrap gap-2">
+                {product.variants.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    aria-pressed={variant?.id === option.id}
+                    onClick={() => setVariant(option)}
+                    className={`min-h-11 rounded-lg border px-4 text-sm ${variant?.id === option.id ? 'border-ghost-plum bg-ghost-plum text-white' : 'border-ghost-line'}`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+          ) : null}
+          <div className="mt-8 space-y-3 md:mt-auto md:pt-8">
+            <Button className="w-full" onClick={() => onAddToCart(configured)}>
+              Agregar al carrito
+            </Button>
+            <button
+              type="button"
+              onClick={onFavorite}
+              aria-pressed={favorite}
+              className="min-h-11 w-full text-sm font-semibold"
+            >
+              {favorite ? '♥ Guardado en favoritos' : '♡ Guardar en favoritos'}
+            </button>
+            {notice && (
+              <div
+                role="status"
+                className="rounded-lg bg-ghost-mint p-4 text-sm"
+              >
+                <p>{notice}</p>
+                <button
+                  type="button"
+                  onClick={onCart}
+                  className="mt-2 min-h-10 font-semibold underline"
+                >
+                  Ver carrito
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </article>

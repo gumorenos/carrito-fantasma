@@ -6,9 +6,9 @@ export default {
     extend: {
       colors: {
         ghost: {
-          ink: '#241b22',
-          muted: '#6f626b',
-          mist: '#f7f5f0',
+          ink: '#17232d',
+          muted: '#5b6772',
+          mist: '#f3f5f7',
           surface: '#fffefa',
           mint: '#ddf4ea',
           mintStrong: '#b8e3d1',
@@ -20,11 +20,11 @@ export default {
           sun: '#ffd84d',
           sunStrong: '#f5bf21',
           sunSoft: '#fff7d1',
-          plum: '#5c284d',
-          plumDark: '#3d1933',
+          plum: '#163c50',
+          plumDark: '#0d2837',
           violet: '#8c5bb2',
           sky: '#dff1f8',
-          line: '#e5ded6',
+          line: '#e1e6eb',
         },
       },
       boxShadow: {

@@ -1,6 +1,6 @@
 /* global caches, fetch, Response, self, URL */
 
-const CACHE_NAME = 'carrito-fantasma-shell-v1'
+const CACHE_NAME = 'carrito-fantasma-shell-v2'
 const APP_SHELL = [
   '/',
   '/manifest.webmanifest',

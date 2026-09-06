@@ -1,3 +1,5 @@
+> **Dirección vigente — 2026-09-06:** El usuario autorizó una tienda inmersiva. Ver [plan de implementación](docs/IMMERSIVE_STORE_PLAN.md). Sustituye las reglas anteriores de avisos constantes, emojis como producto, guardado manual y seguimiento simbólico. Aclaración inicial y junto a Confirmar pedido; sin cobro, envío ni datos de pago. Los apartados de implementación previos describen la versión anterior.
+
 # Carrito Fantasma
 
 > **Llena el carrito. Haz checkout falso. Quédate con tu plata.**

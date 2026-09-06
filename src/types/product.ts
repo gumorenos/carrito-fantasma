@@ -11,6 +11,10 @@ export type ShoppingCategory =
   | 'fomo'
 
 export type FoodCategory =
+  | 'pizzas'
+  | 'pastas'
+  | 'ensaladas'
+  | 'platos'
   | 'hamburguesas'
   | 'pollo'
   | 'sushi'
@@ -46,6 +50,9 @@ export type Store = {
 }
 
 export type Product = {
+  images?: readonly string[]
+  specifications?: readonly string[]
+  variants?: readonly { id: string; label: string }[]
   id: string
   mode: AppMode
   storeId: StoreId

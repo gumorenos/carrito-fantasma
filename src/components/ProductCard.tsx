@@ -1,32 +1,69 @@
 import { formatPen } from '../lib/money'
 import type { Product } from '../types/product'
 import { ProductVisual } from './ProductVisual'
-
-type ProductCardProps = {
+type Props = {
   product: Product
   categoryLabel: string
   onClick: () => void
+  onAdd?: () => void
+  favorite?: boolean
+  onFavorite?: () => void
 }
-
-export function ProductCard({ product, categoryLabel, onClick }: ProductCardProps) {
+export function ProductCard({
+  product,
+  categoryLabel,
+  onClick,
+  onAdd,
+  favorite,
+  onFavorite,
+}: Props) {
   return (
-    <button
-      aria-label={`Ver detalle de ${product.name}`}
-      className="group flex h-full w-full flex-col overflow-hidden rounded-xl border border-ghost-line bg-white text-left shadow-market transition hover:-translate-y-0.5 hover:border-ghost-plum/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ghost-plum"
-      onClick={onClick}
-      type="button"
-    >
-      <div className="aspect-square overflow-hidden">
-        <ProductVisual category={product.category} className="h-full w-full transition duration-300 group-hover:scale-[1.02]" name={product.name} />
-      </div>
-      <div className="flex flex-1 flex-col p-3">
-        <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-ghost-muted">{categoryLabel}</p>
-        <h2 className="mt-1 line-clamp-2 text-sm font-black leading-[1.15rem] tracking-tight text-ghost-ink">{product.name}</h2>
-        <div className="mt-auto flex items-end justify-between gap-2 pt-3">
-          <span className="text-base font-black tracking-tight text-ghost-ink">{formatPen(product.priceInCents)}</span>
-          <span aria-hidden="true" className="flex h-7 w-7 items-center justify-center rounded-lg bg-ghost-sun text-lg font-black leading-none text-ghost-plum">+</span>
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-ghost-line bg-white transition hover:border-slate-400">
+      {onFavorite && (
+        <button
+          aria-label={`${favorite ? 'Quitar de' : 'Guardar en'} favoritos: ${product.name}`}
+          aria-pressed={favorite}
+          onClick={onFavorite}
+          className="absolute right-2 top-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white text-xl shadow-sm"
+          type="button"
+        >
+          {favorite ? '♥' : '♡'}
+        </button>
+      )}
+      <button
+        onClick={onClick}
+        className="text-left"
+        type="button"
+        aria-label={`Ver detalle de ${product.name}`}
+      >
+        <ProductVisual
+          category={product.category}
+          name={product.name}
+          imageUrl={product.imageUrl}
+          className="aspect-square w-full"
+        />
+        <div className="px-3 pt-3 sm:px-4">
+          <p className="text-xs text-ghost-muted">{categoryLabel}</p>
+          <h2 className="mt-1 line-clamp-2 min-h-10 text-sm font-semibold leading-5 sm:text-base">
+            {product.name}
+          </h2>
         </div>
+      </button>
+      <div className="mt-auto flex items-center justify-between gap-2 p-3 sm:p-4">
+        <span className="text-lg font-bold tracking-tight">
+          {formatPen(product.priceInCents)}
+        </span>
+        {onAdd && (
+          <button
+            type="button"
+            onClick={onAdd}
+            aria-label={`Agregar ${product.name}`}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-ghost-plum text-xl text-white hover:bg-ghost-plumDark"
+          >
+            +
+          </button>
+        )}
       </div>
-    </button>
+    </article>
   )
 }

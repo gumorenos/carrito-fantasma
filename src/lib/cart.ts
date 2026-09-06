@@ -1,4 +1,9 @@
-import type { CartItem, Product, ProductCategory, StoreId } from '../types/product'
+import type {
+  CartItem,
+  Product,
+  ProductCategory,
+  StoreId,
+} from '../types/product'
 import { getCartStorageKey } from './storage'
 
 export const MAX_CART_ITEM_QUANTITY = 20
@@ -20,6 +25,10 @@ const validCategories = new Set<ProductCategory>([
   'belleza',
   'viral',
   'fomo',
+  'pizzas',
+  'pastas',
+  'ensaladas',
+  'platos',
   'hamburguesas',
   'pollo',
   'sushi',
@@ -67,14 +76,24 @@ export function sanitizeCart(value: unknown): CartItem[] {
     if (activeStoreId && candidate.storeId !== activeStoreId) continue
     activeStoreId ??= candidate.storeId as StoreId
 
-    const existing = sanitized.find((item) => item.productId === candidate.productId)
+    const existing = sanitized.find(
+      (item) => item.productId === candidate.productId,
+    )
 
     if (existing) {
       const available = MAX_CART_TOTAL_ITEMS - getTotalItemCount(sanitized)
-      existing.quantity = Math.min(existing.quantity + candidate.quantity, MAX_CART_ITEM_QUANTITY, existing.quantity + Math.max(available, 0))
+      existing.quantity = Math.min(
+        existing.quantity + candidate.quantity,
+        MAX_CART_ITEM_QUANTITY,
+        existing.quantity + Math.max(available, 0),
+      )
     } else {
       const available = MAX_CART_TOTAL_ITEMS - getTotalItemCount(sanitized)
-      const quantity = Math.min(candidate.quantity, MAX_CART_ITEM_QUANTITY, Math.max(available, 0))
+      const quantity = Math.min(
+        candidate.quantity,
+        MAX_CART_ITEM_QUANTITY,
+        Math.max(available, 0),
+      )
       if (quantity > 0) sanitized.push({ ...candidate, quantity })
     }
 
@@ -108,8 +127,12 @@ function getTotalItemCount(items: readonly CartItem[]): number {
   return items.reduce((total, item) => total + item.quantity, 0)
 }
 
-export function addItem(items: readonly CartItem[], product: Product): CartItem[] {
-  if (!Number.isSafeInteger(product.priceInCents) || product.priceInCents <= 0) return [...items]
+export function addItem(
+  items: readonly CartItem[],
+  product: Product,
+): CartItem[] {
+  if (!Number.isSafeInteger(product.priceInCents) || product.priceInCents <= 0)
+    return [...items]
   if (items.some((item) => item.storeId !== product.storeId)) return [...items]
 
   const existingIndex = items.findIndex((item) => item.productId === product.id)
@@ -117,7 +140,10 @@ export function addItem(items: readonly CartItem[], product: Product): CartItem[
 
   if (existingIndex >= 0) {
     const existing = next[existingIndex]
-    if (existing.quantity < MAX_CART_ITEM_QUANTITY && getTotalItemCount(next) < MAX_CART_TOTAL_ITEMS) {
+    if (
+      existing.quantity < MAX_CART_ITEM_QUANTITY &&
+      getTotalItemCount(next) < MAX_CART_TOTAL_ITEMS
+    ) {
       existing.quantity += 1
     }
     return next
@@ -140,11 +166,17 @@ export function addItem(items: readonly CartItem[], product: Product): CartItem[
   return next
 }
 
-export function removeItem(items: readonly CartItem[], productId: string): CartItem[] {
+export function removeItem(
+  items: readonly CartItem[],
+  productId: string,
+): CartItem[] {
   return items.filter((item) => item.productId !== productId)
 }
 
-export function incrementItem(items: readonly CartItem[], productId: string): CartItem[] {
+export function incrementItem(
+  items: readonly CartItem[],
+  productId: string,
+): CartItem[] {
   if (getTotalItemCount(items) >= MAX_CART_TOTAL_ITEMS) return [...items]
 
   return items.map((item) =>
@@ -154,7 +186,10 @@ export function incrementItem(items: readonly CartItem[], productId: string): Ca
   )
 }
 
-export function decrementItem(items: readonly CartItem[], productId: string): CartItem[] {
+export function decrementItem(
+  items: readonly CartItem[],
+  productId: string,
+): CartItem[] {
   return items.map((item) =>
     item.productId === productId && item.quantity > 1
       ? { ...item, quantity: item.quantity - 1 }
@@ -167,7 +202,10 @@ export function clearCart(): CartItem[] {
 }
 
 export function getCartSubtotal(items: readonly CartItem[]): number {
-  return items.reduce((subtotal, item) => subtotal + item.unitPriceInCents * item.quantity, 0)
+  return items.reduce(
+    (subtotal, item) => subtotal + item.unitPriceInCents * item.quantity,
+    0,
+  )
 }
 
 export function getCartItemCount(items: readonly CartItem[]): number {
